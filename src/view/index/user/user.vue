@@ -2,10 +2,11 @@
     <div class="main">
         <div class="register-container">
             <div class="register-all">
-                <!-- 顶部标题 -->
-                <div class="allar-top">
-                    <div class="allar-top-a"></div>
-                    <div class="allar-top-r">會員中心</div>
+                <!-- 顶部标题：只保留返回按钮 -->
+                <div class="allar-top allar-top-transparent">
+                    <div class="allar-top-a" @click="goBack">
+                        <Icon icon="tabler:chevron-left" height="30" />
+                    </div>
                 </div>
 
                 <!-- 中间滚动区域 -->
@@ -258,6 +259,11 @@ const route = useRoute();
 const baseURL = request.defaults.baseURL || '';
 
 const showToast = ref(false);
+
+// 返回上一頁
+const goBack = () => {
+    router.back()
+}
 const showtext = ref('');
 
 const yesno = ref(false);
@@ -522,7 +528,7 @@ onUnmounted(() => {
 /* 内容滚动容器 */
 .content-wrapper {
     position: absolute;
-    top: 40px;
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
@@ -531,6 +537,17 @@ onUnmounted(() => {
     box-sizing: border-box;
     padding-bottom: 80px !important;
     background: #fff !important;
+}
+
+/* 透明頂欄：讓背景圖延伸到劉海區域 */
+.allar-top-transparent {
+    background: transparent !important;
+    border-bottom: none !important;
+}
+.allar-top-transparent .allar-top-a {
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    width: auto;
 }
 
 .cuekdil {
