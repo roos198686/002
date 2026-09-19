@@ -1,0 +1,9 @@
+<!--
+  iOS Info.plist 隱私權描述片段
+  將以下兩個鍵值合併進 ios/App/App/Info.plist 的 <dict> 內。
+  注意：文案需與 App 實際用途一致，否則 App Store 審核可能被拒。
+-->
+<key>NSPhotoLibraryUsageDescription</key>
+<string>需要存取您的相簿，以便選取並上傳圖片（如頭像、商品圖片）。</string>
+<key>NSContactsUsageDescription</key>
+<string>需要存取您的通訊錄，以便您快速邀請聯絡人成為好友。</string>

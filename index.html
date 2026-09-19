@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+
+  <!-- 🔥 桌面全屏核心（完整无误版） -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- 桌面名称 -->
+  <meta name="apple-mobile-web-app-title" content="新名称">
+  <link rel="icon" href="/logo.png" />
+  <link rel="apple-touch-icon" href="/logo.png">
+
+  <!-- 🔥 强制全屏样式（解决 100vh 兼容问题） -->
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      height: -webkit-fill-available !important; /* 必须加 !important */
+      overflow: hidden;
+      background-color: #222;
+      overscroll-behavior: none;
+    }
+    #app {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+
+  <title></title>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

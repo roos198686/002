@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">SKS</string>
+    <string name="title_activity_main">SKS</string>
+    <string name="package_name">www.stockings.top</string>
+    <string name="custom_url_scheme">www.stockings.top</string>
+</resources>
