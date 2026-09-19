@@ -4,7 +4,7 @@
             <div class="register-all">
                 <!-- 頂部標題 -->
                 <div class="allar-top">
-                    <div @click="goBack" style="margin-left: 10px;cursor: pointer;color: #a88035;width: 30px;">
+                    <div @click="goBack" style="margin-left: 10px;cursor: pointer;color: #000;width: 30px;">
                         <Icon icon="material-symbols:arrow-back-ios-rounded" width="18" />
                     </div>
                     <div class="allar-top-a">變更資金密碼</div>
@@ -198,7 +198,7 @@ onMounted(() => {
 .allar-top-a {
     font-size: 15px;
     font-weight: bold;
-    color: #8a6520;
+    color: #000;
     text-align: center;
     width: 100%;
     margin-right: 40px;
@@ -255,36 +255,46 @@ onMounted(() => {
 }
 
 .texta {
-    color: #e390fc;
+    color: #4e4e4e;
     text-align: left;
     font-size: 14px;
 }
 
 .textbutt {
     margin-top: 50px;
-    background: linear-gradient(360deg, #ff33ee, #eda5fc);
+    background-color: #2c51a1;
     text-align: center;
     border-radius: 50px;
     padding: 8px 15px;
     font-weight: 900;
     cursor: pointer;
+    color: #fff;
 }
 
 .textbutt:hover {
-    background: linear-gradient(360deg, #b147bb, #eda5fc);
+    background-color: #5c8aee;
 }
 
 .copy-toast {
-       position: fixed;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(46, 46, 46, 0.8);
-    color: #333;
-    padding: 20px;
-    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.82);
+    color: #fff;
+    padding: 18px 24px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
     z-index: 9999;
-    min-width: 250px;
+    min-width: 160px;
+    max-width: 70%;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.6;
+    box-sizing: border-box;
 }
 
 /* 隱藏捲軸 + 禁止彈回 */
