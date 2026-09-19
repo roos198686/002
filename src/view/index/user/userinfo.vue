@@ -4,7 +4,7 @@
             <div class="register-all">
                 <!-- 顶部标题：只保留返回按钮 -->
                 <div class="allar-top allar-top-transparent">
-                    <div @click="goBack" style="margin-left: 10px;cursor: pointer;width: 30px;">
+                    <div @click="goBack" class="allar-topgoBack">
                         <Icon icon="tabler:chevron-left" height="30" />
                     </div>
                 </div>
@@ -447,13 +447,14 @@ onMounted(() => {
 <style scoped>
 :global(html),
 :global(body) {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow: hidden !important;
-  position: fixed;
-  width: 100%;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden !important;
+    position: fixed;
+    width: 100%;
 }
+
 /* ========== 全局布局�?00% 统一 ========== */
 .main {
     position: absolute;
@@ -496,7 +497,6 @@ onMounted(() => {
     z-index: 999;
     display: flex;
     align-items: center;
-    background: #f7f7f7;
     height: 45px;
     border-bottom: 1px solid #ddd;
 }
@@ -504,7 +504,6 @@ onMounted(() => {
 .allar-top-a {
     font-size: 15px;
     font-weight: bold;
-    color: #8a6520;
     text-align: center;
     width: 100%;
     margin-right: 40px;
@@ -529,10 +528,11 @@ onMounted(() => {
     background: transparent !important;
     border-bottom: none !important;
 }
+
 .allar-top-transparent .allar-top-a,
-.allar-top-transparent > div {
+.allar-top-transparent>div {
     color: #fff;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 .cuekdil {
@@ -552,7 +552,7 @@ onMounted(() => {
     margin: -20px 20px 10px 20px;
     position: relative;
 
-    
+
 }
 
 .username-avatar img {
@@ -565,7 +565,7 @@ onMounted(() => {
     display: flex;
     align-items: center;
     flex-direction: row;
-   
+
 }
 
 .avatar-btn-wrap {
@@ -723,16 +723,16 @@ onMounted(() => {
 }
 
 .cardlist-add {
-    background: linear-gradient(360deg, #b19f01, #f1ec9a);
+    background-color: #347afd;
     padding: 7px;
-    color: #000;
-    border-radius: 50px;
+    color: #fff;
+    border-radius: 10px;
     margin-bottom: 20px;
     text-align: center;
 }
 
 .cardlist-add:hover {
-    background: linear-gradient(360deg, #746801, #d6d174);
+    background-color: #b4ccf8;
     cursor: pointer;
 }
 
@@ -741,12 +741,21 @@ onMounted(() => {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(46, 46, 46, 0.8);
-    color: #333;
-    padding: 20px;
-    border-radius: 8px;
-    z-index: 999999;
-    min-width: 250px;
+    background: rgba(0, 0, 0, 0.82);
+    color: #fff;
+    padding: 18px 24px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    z-index: 9999;
+    min-width: 160px;
+    max-width: 70%;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.6;
+    box-sizing: border-box;
 }
 
 /* 资料编辑弹窗 */
@@ -800,5 +809,14 @@ onMounted(() => {
     padding: 0 !important;
     overflow: hidden !important;
     overscroll-behavior: none !important;
+}
+
+.allar-topgoBack {
+    margin-left: 10px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    background-color: #0000008c;
+    border-radius: 5px;
 }
 </style>
