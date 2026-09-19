@@ -2,12 +2,11 @@
     <div class="main">
         <div class="register-container">
             <div class="register-all">
-                <!-- 统一顶部 -->
-                <div class="allar-top">
+                <!-- 统一顶部：只保留返回按钮 -->
+                <div class="allar-top allar-top-transparent">
                     <div class="allar-top-a" @click="goBack">
                         <Icon icon="tabler:chevron-left" height="30" />
                     </div>
-                    <div class="allar-top-r">個人資料</div>
                 </div>
 
                 <!-- 统一滚动容器 -->
@@ -885,7 +884,7 @@ onMounted(() => {
 
 .content-wrapper {
     position: absolute;
-    top: 40px;
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
@@ -893,8 +892,18 @@ onMounted(() => {
     overflow-x: hidden;
     box-sizing: border-box;
     overscroll-behavior-y: none;
-    height: calc(100% - 40px);
+    height: 100%;
     -webkit-overflow-scrolling: touch;
+}
+
+/* 透明頂欄：讓背景圖延伸到劉海區域 */
+.allar-top-transparent {
+    background: transparent !important;
+    border-bottom: none !important;
+}
+.allar-top-transparent .allar-top-a {
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
 }
 
 .cuekdil {
