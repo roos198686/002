@@ -949,7 +949,7 @@ onMounted(() => {
     font-size: 18px;
     border-radius: 8px;
     background: rgba(0, 0, 0, 0.4);
-    color: #333;
+    color: #ffffff;
     cursor: pointer;
 }
 
@@ -1047,7 +1047,7 @@ onMounted(() => {
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
-    padding-bottom: 80px;
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
     height: 100vh;
     box-sizing: border-box;
     /* background-color: #fff; */
@@ -1189,7 +1189,7 @@ onMounted(() => {
 }
 
 .spec-label {
-    color: #333;
+    color: #ffffff;
     font-size: 14px;
     background: #e003fd;
     padding: 2px 6px;
@@ -1225,14 +1225,14 @@ onMounted(() => {
     border-radius: 25px 25px 0 0;
 }
 .card-titlea {
-    color: #333;
+    color: #ffffff;
     font-size: 15px;
     font-weight: bold;
     margin-top: -25px;
     /* margin-bottom: 20px; */
-    border-radius: 25px 25px 0 0;
+    border-radius: 10px 10px 0 0;
     padding: 10px 15px;
-    background-color: #ff5fe4;
+    background-color: #d102af;
 }
 .detail-imgs {
     display: flex;
@@ -1251,14 +1251,13 @@ onMounted(() => {
 
 /*底部固定成功*/
 .detail-bottom {
-    height: 50px;
+    min-height: 56px;
     background: #f7f7f7;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 15px;
+    padding: 8px 15px calc(8px + env(safe-area-inset-bottom));
     gap: 10px;
-    padding-bottom: env(safe-area-inset-bottom, 20px);
     position: fixed;
     max-width: 500px;
     bottom: 0;
@@ -1274,11 +1273,11 @@ onMounted(() => {
 
 .icon-btn {
     display: flex;
-    align-items: center;
+    /* align-items: center; */
     cursor: pointer;
     width: 30px;
     color: #333;
-    padding: 0 10px;
+    padding: 4px 10px;
 }
 
 .icon-btn .collected {
@@ -1289,7 +1288,7 @@ onMounted(() => {
     display: flex;
     flex-direction: row;
     flex: 1;
-    background-color: #ff33ee;
+    /* background-color: #ff33ee; */
     border-radius: 6px;
 }
 
@@ -1305,12 +1304,13 @@ onMounted(() => {
     font-size: 13px;
     font-weight: bold;
     cursor: pointer;
+    
 }
 
 .buy-btna {
     width: 60%;
     height: 32px;
-    background: #ff33ee;
+    background: #db01c9;
     color: #fff;
     border-radius: 8px;
     display: flex;
@@ -1319,6 +1319,7 @@ onMounted(() => {
     font-size: 13px;
     font-weight: bold;
     cursor: pointer;
+    margin-left: -15px;
 }
 
 /*弹窗通用样式*/
@@ -1661,13 +1662,21 @@ onMounted(() => {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(46, 46, 46, 0.8);
-    color: #333;
-    padding: 20px;
-    border-radius: 8px;
-    z-index: 999999999;
-    min-width: 250px;
+    background: rgba(0, 0, 0, 0.82);
+    color: #fff;
+    padding: 18px 24px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    z-index: 9999;
+    min-width: 160px;
+    max-width: 70%;
     text-align: center;
+    font-size: 14px;
+    line-height: 1.6;
+    box-sizing: border-box;
 }
 
 .toast-icon {
