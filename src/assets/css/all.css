@@ -1,28 +1,60 @@
-/* 弹出窗 */
+/* 彈出窗 */
 
 .custom-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0,0,0,0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
 }
 .modal-box {
-  background: #fff;
-  padding: 30px 40px;
-  border-radius: 16px;
+  background: rgba(0,0,0,0.82);
+  padding: 24px 28px;
+  border-radius: 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap:12px;
-  color:#333;
-  min-width: 35%;
+  justify-content: center;
+  gap: 10px;
+  color: #fff;
+  min-width: 200px;
+  max-width: 72%;
+  text-align: center;
+  box-sizing: border-box;
 }
 .modal-text {
-  font-size:16px;
-  color:#333;
+  font-size:15px;
+  line-height: 1.6;
+  color:#fff;
+}
+
+/* 輕提示（無遮罩，居中小卡片） */
+.copy-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.82);
+  color: #fff;
+  padding: 18px 24px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 9999;
+  min-width: 160px;
+  max-width: 70%;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+.toast-text {
+  color: #fff;
+  font-size: 15px;
 }
 /* 顶部导航栏 */
 .register-all {
