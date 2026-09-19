@@ -50,8 +50,10 @@
     align-items: center;
     background: #f7f7f7;
     height: 45px;
-    padding:0 5px;
-
+    padding: 0 5px;
+    /* 避開劉海/狀態欄 */
+    padding-top: env(safe-area-inset-top);
+    box-sizing: content-box;
 }
 .allar-top-a{
     font-size: 17px;
