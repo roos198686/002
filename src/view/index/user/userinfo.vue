@@ -2,12 +2,11 @@
     <div class="main">
         <div class="register-container">
             <div class="register-all">
-                <!-- 顶部标题：统一 fixed + 返回箭头 -->
-                <div class="allar-top">
-                    <div @click="goBack" style="margin-left: 10px;cursor: pointer;color: #a88035;width: 30px;">
-                        <Icon icon="material-symbols:arrow-back-ios-rounded" width="18" />
+                <!-- 顶部标题：只保留返回按钮 -->
+                <div class="allar-top allar-top-transparent">
+                    <div @click="goBack" style="margin-left: 10px;cursor: pointer;width: 30px;">
+                        <Icon icon="tabler:chevron-left" height="30" />
                     </div>
-                    <div class="allar-top-a">使用者資料</div>
                 </div>
                 <!-- 中间滚动区域：完全统一 -->
                 <div class="content-wrapper">
@@ -514,7 +513,7 @@ onMounted(() => {
 /* ========== 滚动容器：完全统一 ========== */
 .content-wrapper {
     position: absolute;
-    top: 40px;
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
@@ -523,6 +522,17 @@ onMounted(() => {
     box-sizing: border-box;
     padding-bottom: 20px !important;
     background: #fff !important;
+}
+
+/* 透明頂欄：讓背景圖延伸到劉海區域 */
+.allar-top-transparent {
+    background: transparent !important;
+    border-bottom: none !important;
+}
+.allar-top-transparent .allar-top-a,
+.allar-top-transparent > div {
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
 }
 
 .cuekdil {
