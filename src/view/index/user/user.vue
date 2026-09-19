@@ -2,13 +2,6 @@
     <div class="main">
         <div class="register-container">
             <div class="register-all">
-                <!-- 顶部标题：只保留返回按钮 -->
-                <div class="allar-top allar-top-transparent">
-                    <div class="allar-top-a" @click="goBack">
-                        <Icon icon="tabler:chevron-left" height="30" />
-                    </div>
-                </div>
-
                 <!-- 中间滚动区域 -->
                 <div class="content-wrapper">
                     <div class="cuekdil">
@@ -34,7 +27,7 @@
 
                             <div class="allcoueksi-a" style="align-items: center;">
                                 <div class="allcoueksi-atext">
-                                    <span style="font-size: 12px;color: #a88035;font-weight: 800;">帳戶餘額：
+                                    <span style="font-size: 12px;color: #000;font-weight: 800;">帳戶餘額：
                                         <span style="font-size: 15px;font-weight: 800;color:#333;">$</span>
                                         <span style="font-size: 23px;font-weight: 800;color:#333;">{{ userInfo.balance
                                             || 0 }}
@@ -46,7 +39,7 @@
                             </div>
                             <div v-if="yesno" style="text-align: left;font-size:13px;padding:0 20px 20px 20px;">
                                 <div
-                                    style="padding: 20px;border: 1px solid #000;border-radius: 6px;background-color: #fff;">
+                                    style="padding: 20px;border: 1px solid #ccc;border-radius: 6px;background-color: #fff;">
                                     <div style="color:#fc01fc;font-weight:bold;">收入汇总</div>
                                     <div class="allcoueksi-a">
                                         <div style="text-align:center;color:#666;font-size:12px;margin-right: 5px;">
@@ -124,7 +117,7 @@
                             </div>
 
                             <div class="kdilspsdas">
-                                <div style="flex: 1;display: flex;flex-direction: column;justify-content: center;padding-top: 10px;"
+                                <div style="flex: 1;display: flex;flex-direction: column;justify-content: center;padding-top: 10px;align-items: center;"
                                     @click="cart">
                                     <div>
                                         <Icon icon="material-symbols:shopping-cart-checkout-rounded" height="28"
@@ -132,21 +125,21 @@
                                     </div>
                                     <div style="color:#666;">購物車</div>
                                 </div>
-                                <div style="flex: 1;display: flex;flex-direction: column;justify-content: center;padding-top: 10px;"
+                                <div style="flex: 1;display: flex;flex-direction: column;justify-content: center;padding-top: 10px;align-items: center;"
                                     @click="orders">
                                     <div>
                                         <Icon icon="carbon:ibm-watson-orders" height="28" style="color:#666;" />
                                     </div>
                                     <div style="color:#666;">我的訂單</div>
                                 </div>
-                                <div style="flex: 1;display: flex;flex-direction: column;justify-content: center;padding-top: 10px;"
+                                <div style="flex: 1;display: flex;flex-direction: column;justify-content: center;padding-top: 10px;align-items: center;"
                                     @click="address">
                                     <div>
                                         <Icon icon="mdi:address-marker-outline" height="28" style="color:#666;" />
                                     </div>
                                     <div style="color:#666;">收貨位址</div>
                                 </div>
-                                <div style="flex: 1;display: flex;flex-direction: column;justify-content: center;padding-top: 10px;"
+                                <div style="flex: 1;display: flex;flex-direction: column;justify-content: center;padding-top: 10px;align-items: center;"
                                     @click="collect">
                                     <div>
                                         <Icon icon="fluent:collections-16-regular" height="28" style="color:#666;" />
@@ -194,12 +187,6 @@
                                 </div>
                             </div>
                             <div class="butopkdo" style="margin-bottom: 20px;">
-                                <!-- <div class="butopkdo-text" @click="userrecommend">
-                                    <Icon icon="material-symbols:recommend-outline-sharp" height="28" />
-                                    <span style="margin-left: 10px;">我的推薦人</span>
-                                    <Icon icon="mdi:chevron-right" height="28"
-                                        style="text-align: right;margin-left: auto;" />
-                                </div> -->
                                 <div class="butopkdo-text" @click="user_withdraw">
                                     <Icon icon="basil:wallet-solid" height="28" />
                                     <span style="margin-left: 10px;">提現</span>
@@ -621,7 +608,7 @@ onUnmounted(() => {
     padding: 7px 10px;
     font-size: 12px;
     background: #e8e8e8;
-    color: #8a6a30;
+    color: #3d3d3d;
     display: flex;
     border-radius: 5px 5px 0 0;
 }
@@ -643,10 +630,10 @@ onUnmounted(() => {
 }
 
 .tudslig {
-    background: #cf9b69;
+    background: #f007aa;
     padding: 0 7px;
     border-radius: 4px;
-    color: #000;
+    color: #fff;
     text-align: right;
     margin-left: auto;
 }
@@ -656,6 +643,7 @@ onUnmounted(() => {
     font-size: 12px;
     color: #666;
     line-height: 30px;
+    text-align: center;
 }
 
 .butopkdo {
@@ -667,7 +655,7 @@ onUnmounted(() => {
 .butopkdo-text {
     padding: 10px 20px;
     font-size: 14px;
-    color: #a06a30;
+    color: #494949;
     display: flex;
     align-items: center;
     border-bottom: 1px solid #ddd;
@@ -730,12 +718,21 @@ onUnmounted(() => {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(46, 46, 46, 0.8);
-    color: #333;
-    padding: 20px;
-    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.82);
+    color: #fff;
+    padding: 18px 24px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
     z-index: 9999;
-    min-width: 250px;
+    min-width: 160px;
+    max-width: 70%;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.6;
+    box-sizing: border-box;
 }
 
 .kdilspsdas {
@@ -747,6 +744,8 @@ onUnmounted(() => {
     padding-bottom: 10px;
     border-radius: 6px;
     border: 1px solid #ddd;
+    justify-content: center;
+    align-items: center;
 }
 
 .username-text {
