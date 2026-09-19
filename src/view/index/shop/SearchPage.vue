@@ -297,7 +297,7 @@ onMounted(async () => {
 .search-header {
     display: flex;
     align-items: center;
-    padding: 8px 15px;
+    padding: calc(8px + env(safe-area-inset-top)) 15px 8px 15px;
     background: #f7f7f7;
     gap: 10px;
     position: sticky;

@@ -453,7 +453,7 @@ onUnmounted(() => {
 
 .alla {
     flex: 1;
-    padding-top: 45px;
+    padding-top: calc(45px + env(safe-area-inset-top));
     overflow: hidden;
     position: relative;
 }

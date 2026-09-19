@@ -2,7 +2,7 @@
     <div class="main">
         <div class="register-container">
             <div class="register-all">
-                <div style="padding-top: 20px;">
+                <div style="padding-top: calc(20px + env(safe-area-inset-top));">
                     <div style="display: flex;justify-content: center;align-items: center;flex-direction: column;">
                         <div class="loginlog">SOCKLY</div>
                         <div class="register-title">登入</div>

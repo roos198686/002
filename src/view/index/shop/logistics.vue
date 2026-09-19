@@ -198,6 +198,7 @@ onMounted(() => {
     margin: 0 auto;
     height: 100%;
     overflow-y: auto;
+    padding-top: calc(45px + env(safe-area-inset-top));
     padding-bottom: 40px;
     background-color: #fff;
 }
@@ -215,6 +216,8 @@ onMounted(() => {
     background: #f7f7f7;
    height: 45px;
     border-bottom: 1px solid #ddd;
+    padding-top: env(safe-area-inset-top);
+    box-sizing: content-box;
 }
 
 .back-icon {

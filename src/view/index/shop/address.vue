@@ -360,6 +360,8 @@ onMounted(async () => {
     background: #f7f7f7;
     height: 45px;
     border-bottom: 1px solid #ddd;
+    padding-top: env(safe-area-inset-top);
+    box-sizing: content-box;
 }
 
 .allar-top-a {
@@ -373,7 +375,7 @@ onMounted(async () => {
 
 .content-wrapper {
     position: absolute;
-    top: 45px;
+    top: calc(45px + env(safe-area-inset-top));
     left: 0;
     right: 0;
     bottom: 0;

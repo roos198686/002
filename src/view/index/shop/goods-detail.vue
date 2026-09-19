@@ -909,6 +909,8 @@ onMounted(() => {
     flex-direction: column;
     max-width: 500px;
     margin: 0 auto;
+    padding-top: env(safe-area-inset-top);
+    box-sizing: content-box;
 }
 
 .mobile-header.headerBgWhite {

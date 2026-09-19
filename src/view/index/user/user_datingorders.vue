@@ -223,7 +223,7 @@ onMounted(() => {
     z-index: 999;
     display: flex;
     align-items: center;
-    padding: 9px 0;
+    padding: calc(9px + env(safe-area-inset-top)) 0 9px 0;
     background: #f7f7f7;
 }
 
@@ -239,7 +239,7 @@ onMounted(() => {
 /* ========== 滾動容器 ========== */
 .content-wrapper {
     position: absolute;
-    top: 40px;
+    top: calc(40px + env(safe-area-inset-top));
     left: 0;
     right: 0;
     bottom: 0;

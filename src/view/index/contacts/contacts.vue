@@ -480,6 +480,8 @@ onUnmounted(() => {
     align-items: center;
     height: 45px;
     border-bottom: 1px solid #ddd;
+    padding-top: env(safe-area-inset-top);
+    box-sizing: content-box;
 }
 
 .allar-top-a {
@@ -507,7 +509,7 @@ onUnmounted(() => {
 
 .content-wrapper {
     position: absolute;
-    top: 35px;
+    top: calc(35px + env(safe-area-inset-top));
     left: 0;
     right: 0;
     bottom: 0;

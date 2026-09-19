@@ -98,6 +98,8 @@ const goNotice = () => {
     background: #f7f7f7;
     padding: 0 15px;
     position: relative;
+    padding-top: env(safe-area-inset-top);
+    box-sizing: content-box;
 }
 
 .back-icon {

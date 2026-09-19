@@ -499,6 +499,8 @@ onMounted(() => {
     align-items: center;
     height: 45px;
     border-bottom: 1px solid #ddd;
+    padding-top: env(safe-area-inset-top);
+    box-sizing: content-box;
 }
 
 .allar-top-a {

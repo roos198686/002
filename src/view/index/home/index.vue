@@ -1062,7 +1062,7 @@ onUnmounted(() => {
 /* 滚动容器 */
 .content-wrapper {
     position: absolute;
-    top: 40px;
+    top: calc(40px + env(safe-area-inset-top));
     left: 0;
     right: 0;
     bottom: 0;

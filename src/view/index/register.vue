@@ -330,7 +330,7 @@ body {
 }
 
 .form-wrap {
-    padding-top: 10px;
+    padding-top: calc(10px + env(safe-area-inset-top));
 }
 
 .register-title {

@@ -608,6 +608,8 @@ onUnmounted(() => {
     height: 45px;
     align-items: center;
     border-bottom: 1px solid #ddd;
+    padding-top: env(safe-area-inset-top);
+    box-sizing: content-box;
 }
 
 .allar-top-a {
@@ -644,7 +646,7 @@ onUnmounted(() => {
     display: flex;
     flex-direction: column;
     background: linear-gradient(375deg, #ff33ee 0%, #ecc97f 50%, #fff 100%);
-    padding: 15px 25px 35px 25px;
+    padding: calc(15px + env(safe-area-inset-top)) 25px 35px 25px;
     text-align: left;
     border-bottom-left-radius: 60% 40px;
     border-bottom-right-radius: 60% 40px;

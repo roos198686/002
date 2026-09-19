@@ -195,6 +195,8 @@ onMounted(() => {
     background: #f7f7f7;
     height: 45px;
     border-bottom: 1px solid #ddd;
+    padding-top: env(safe-area-inset-top);
+    box-sizing: content-box;
 }
 
 .allar-top-a {
@@ -209,7 +211,7 @@ onMounted(() => {
 /* 滾動容器 */
 .content-wrapper {
     position: absolute;
-    top: 40px;
+    top: calc(40px + env(safe-area-inset-top));
     left: 0;
     right: 0;
     bottom: 0;

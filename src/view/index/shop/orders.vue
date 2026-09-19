@@ -11,7 +11,7 @@
                 </div>
                 <!-- 状态切換成功-->
                 <div class="order-tabs"
-                    style="position: fixed;top: 45px;left: 0;right: 0;max-width: 500px;margin: 0 auto;z-index: 998;">
+                    style="position: fixed;top: calc(45px + env(safe-area-inset-top));left: 0;right: 0;max-width: 500px;margin: 0 auto;z-index: 998;">
                     <div class="tab-item" :class="activeTab === '' ? 'active' : ''" @click="switchTab('')">全部</div>
                     <!-- <div class="tab-item" :class="activeTab === '1' ? 'active' : ''" @click="switchTab('1')">待付款成功</div> -->
                     <div class="tab-item" :class="activeTab === '2' ? 'active' : ''" @click="switchTab('2')">待出貨</div>
@@ -20,7 +20,7 @@
                 </div>
 
                 <!-- 内容或上传-->
-                <div class="content-wrapper" style="top:75px;" id="orderScroll">
+                <div class="content-wrapper" style="top: calc(75px + env(safe-area-inset-top));" id="orderScroll">
                     <div class="cuekdil">
                         <div class="order-list">
                             <div class="order-item" v-for="item in orderList" :key="item.order_no">
@@ -378,6 +378,8 @@ watch(() => route.path, () => { }, { immediate: true });
     background: #f7f7f7;
     height: 45px;
     border-bottom: 1px solid #ddd;
+    padding-top: env(safe-area-inset-top);
+    box-sizing: content-box;
 }
 
 .allar-top-a {

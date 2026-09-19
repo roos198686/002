@@ -315,6 +315,8 @@ onUnmounted(() => {
     background: #f7f7f7;
    height: 45px;
     border-bottom: 1px solid #ddd;
+    padding-top: env(safe-area-inset-top);
+    box-sizing: content-box;
 }
 
 .allar-top-a {
@@ -344,7 +346,7 @@ onUnmounted(() => {
     /* border-radius: 6px; */
     padding: 15px 15px 100px 15px;
     box-sizing: border-box;
-    margin-top: 40px;
+    margin-top: calc(40px + env(safe-area-inset-top));
     max-height: calc(100vh - 60px);
     overflow-y: auto;
     overflow-x: hidden;

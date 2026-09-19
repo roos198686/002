@@ -170,6 +170,8 @@ const submit = async () => {
     height: 45px;
     border-bottom: 1px solid #ddd;
     background: #f7f7f7;
+    padding-top: env(safe-area-inset-top);
+    box-sizing: content-box;
 }
 
 .allar-top-a {
@@ -183,7 +185,7 @@ const submit = async () => {
 
 .content-wrapper {
     position: absolute;
-    top: 40px;
+    top: calc(40px + env(safe-area-inset-top));
     left: 0;
     right: 0;
     bottom: 0;

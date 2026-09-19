@@ -466,6 +466,8 @@ onMounted(async () => {
     padding: 0 12px;
     width: 100%;
     box-sizing: border-box;
+    padding-top: env(safe-area-inset-top);
+    box-sizing: content-box;
 }
 
 .allar-top-a {
@@ -482,7 +484,7 @@ onMounted(async () => {
 /* 滚动内容区域 同步适配底部安全選*/
 .content-wrapper {
     position: absolute;
-    top: 45px;
+    top: calc(45px + env(safe-area-inset-top));
     left: 0;
     right: 0;
     bottom: calc(60px + env(safe-area-inset-bottom));

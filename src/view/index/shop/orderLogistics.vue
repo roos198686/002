@@ -345,7 +345,7 @@ onUnmounted(() => {
 }
 .tab-wrap {
     padding:10px 15px;
-    margin-top: 45px;
+    margin-top: calc(45px + env(safe-area-inset-top));
 }
 .order-tab {
     display: flex;
@@ -610,6 +610,8 @@ onUnmounted(() => {
     background: #f7f7f7;
     height: 45px;
     border-bottom: 1px solid #ddd;
+    padding-top: env(safe-area-inset-top);
+    box-sizing: content-box;
 }
 .allar-top-a {
     font-size: 15px;
