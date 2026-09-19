@@ -26,33 +26,17 @@ jobs:
       - name: Build web assets
         run: npx vite build
 
-      - name: Add iOS platform
-        run: npx cap add ios
+      # ios/ 工程已隨倉庫提交（含 AppPermission 原生插件），只需同步 web 產物
+      - name: Sync web assets to iOS
+        run: npx cap sync ios
 
-      # Capacitor 8 / Xcode 16 的 ios/App/App 為「檔案同步群組」，
-      # 複製進去的原始檔會自動加入 App target，無需手動修改 pbxproj
-      - name: Install AppPermission native plugin sources
-        run: |
-          cp native-plugins/ios/AppPermissionPlugin.swift ios/App/App/
-          cp native-plugins/ios/AppPermissionPlugin.m ios/App/App/
-
-      - name: Inject privacy usage descriptions (Info.plist)
-        run: |
-          PLIST=ios/App/App/Info.plist
-          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string 需要存取您的相簿，以便選取並上傳圖片（如頭像、商品圖片）。" "$PLIST"
-          /usr/libexec/PlistBuddy -c "Add :NSContactsUsageDescription string 需要存取您的通訊錄，以便您快速邀請聯絡人成為好友。" "$PLIST"
-
-      - name: Install CocoaPods dependencies
-        working-directory: ios/App
-        run: pod install
-
-      # 無簽名構建（真機 arm64 架構），產出 App.app
+      # 無簽名構建（真機 arm64），SPM 自動解析 Capacitor 依賴
       - name: Build unsigned App.app (iphoneos)
         working-directory: ios/App
         run: |
           set -o pipefail
           xcodebuild \
-            -workspace App.xcworkspace \
+            -project App.xcodeproj \
             -scheme App \
             -configuration Release \
             -sdk iphoneos \

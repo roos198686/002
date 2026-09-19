@@ -33,6 +33,17 @@ android/app/src/main/assets/capacitor.config.json
 android/app/src/main/assets/capacitor.plugins.json
 android/.idea/
 
+# Capacitor iOS 生成資源（cap sync 重新產生）與 Xcode 建構產物
+ios/App/App/public/
+ios/App/App/capacitor.config.json
+ios/App/derived/
+ios/App/build/
+ios/App/.swiftpm/
+ios/App/App.xcodeproj/project.xcworkspace/xcuserdata/
+ios/App/App.xcodeproj/xcuserdata/
+ios/App/SourcePackages/
+*.xcuserstate
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
