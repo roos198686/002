@@ -2,23 +2,18 @@
     <div class="main">
         <div class="register-container">
             <div class="register-all">
-                <!-- 頂部標題 -->
-                <div class="allar-top">
-                    <div @click="goBack" style="margin-left: 10px;cursor: pointer;color: #a88035;width: 30px;">
-                        <Icon icon="material-symbols:arrow-back-ios-rounded" width="18" />
-                    </div>
-                    <div class="allar-top-a" style="margin-right: 25px;">儲值</div>
-                   
-
-                </div>
-
                 <!-- 滾動內容區 -->
                 <div class="content-wrapper">
                     <div class="cuekdil">
                         <div style="height: 100%;">
                             <div class="butttop">
-                                <div class="butttopone">餘額：</div>
-                                <div class="butttoptwo">${{ userInfo.balance }}</div>
+                                <div @click="goBack" class="butttop-b">
+                                    <Icon icon="material-symbols:arrow-back-ios-rounded" width="18" />
+                                </div>
+                                <div class="butttop-a">
+                                    <div class="butttopone">餘額：</div>
+                                    <div class="butttoptwo">${{ userInfo.balance }}</div>
+                                </div>
                             </div>
                             <div class="buttall">
                                 <div class="buttallone"
@@ -113,7 +108,7 @@ const loadUserInfo = async () => {
         const { data: res } = await request.post('/api/recharge/info', { user_id: userId });
         if (res.code === 1 && res.data) {
             userInfo.balance = res.data.balance || '0';
-            
+
         }
     } catch (err) { }
 };
@@ -224,7 +219,7 @@ onMounted(() => {
 /* 滾動容器 */
 .content-wrapper {
     position: absolute;
-    top: 45px;
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
@@ -242,37 +237,59 @@ onMounted(() => {
 
 /* 頁面樣式 */
 .copy-toast {
-        position: fixed;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(46, 46, 46, 0.8);
-    color: #333;
-    padding: 20px;
-    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.82);
+    color: #fff;
+    padding: 18px 24px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
     z-index: 9999;
-    min-width: 250px;
+    min-width: 160px;
+    max-width: 70%;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.6;
+    box-sizing: border-box;
 }
 
 .butttop {
-    background-color: #fcd9abe3;
+    background-color: #e73601e3;
     height: 120px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     z-index: 9999;
     position: relative;
     border-bottom-left-radius: 60% 40px;
     border-bottom-right-radius: 60% 40px;
-    justify-content: center;
-    align-items: center;
+    /* justify-content: center;
+    align-items: center; */
     font-weight: bolder;
     font-size: 20px;
+}
+.butttop-a{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center; 
+}
+.butttop-b {
+    margin:10px 15px;
+    cursor: pointer;
+    color: #fff;
+    width: 30px;
+    width: 100%;
 }
 
 .buttall {
     margin: -70px 10px 50px 10px;
-    background-color: #f5f5f5;
-    padding-bottom: 30px;
+    background-color: #fcf6fd;
+    padding-bottom: 130px;
     z-index: 33;
     border-radius: 12px;
     height: 100%;
@@ -280,12 +297,12 @@ onMounted(() => {
 }
 
 .butttoptwo {
-    color: #ec00d9;
+    color: #f8d0f5;
 }
 
 .buttallone {
     padding: 80px 0 10px 0;
-    color: #cc9b5a;
+    color: #000;
     border-width: 0 0 1px 0;
     border-style: solid;
     border-color: #ddd;
@@ -300,7 +317,7 @@ onMounted(() => {
     padding-bottom: 20px;
     font-size: 15px;
     font-weight: 900;
-    color: #cc9b5a;
+    color: #5e5d5d;
 }
 
 .buttalltwo-a {
@@ -322,20 +339,22 @@ onMounted(() => {
     border-style: solid;
     border-color: #c7c6c646;
     color: #333;
-    font-size: 12px;
+    font-size: 14px;
     padding: 8px 0;
     cursor: pointer;
     font-weight: bold;
+    text-align: center;
+    background-color: #fae5f2;
 }
 
 .buttokds {
-    height: 35px;
+    height: 45px;
     border-width: 0 0 1px 0;
     border-style: solid;
     border-color: #ddd;
-    color: #cc9b5a;
-    font-size: 12px;
-    line-height: 35px;
+    color: #555555;
+    font-size: 14px;
+    line-height: 45px;
     text-align: left;
     padding: 0 20px;
     font-weight: 800;
@@ -356,35 +375,40 @@ onMounted(() => {
 .buttalltwo-ba.active {
     background-color: #cc9b5a;
     color: #333;
+    
 }
 
 .confirm {
-    background: linear-gradient(360deg, #fac383 60%, #fff);
+    background-color: #0c44bb;
     padding: 8px;
     margin: 20px;
     font-weight: bold;
     border-radius: 6px;
     cursor: pointer;
+    color: #fff;
+    text-align: center;
 }
 
 .confirm:hover {
-    background: linear-gradient(360deg, #fca13a 60%, #fff);
+    background-color: #5287fa;
 }
 
 .confirm-a {
     color: #cc9b5a;
-    font-size: 12px;
+    font-size: 13px;
+    margin-left: 20px;
 }
 
 .form-inputtext {
     padding: 0 5px;
     font-size: 18px;
     font-weight: 800;
-    color: #cc9b5a;
+    color: #fc02a8;
     outline: none;
     transition: border-color 0.3s;
     background-color: #47444700;
     border: none;
+    font-size: 20px;
 }
 
 .form-inputtext.invalid {
