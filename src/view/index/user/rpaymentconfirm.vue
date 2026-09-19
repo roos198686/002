@@ -14,8 +14,8 @@
 
                 <!-- 以下内容 100% 完全保留你原来的布局 -->
 
-                <div style="background-color: #111;height: 100%;">
-                    <div style="font-size: 13px;padding: 10px 15px;color: #cc9b5a;text-align: left;">
+                <div style="background-color: #fff;height: 100%;">
+                    <div style="font-size: 13px;padding: 10px 15px;color: #000;text-align: left;">
                         轉帳至收款帳戶
                     </div>
                     <div class="listadd">
@@ -42,9 +42,7 @@
                     </div>
 
                     <div style="margin:20px 35px;">
-                        <div style="color:#cc9b5a;margin-bottom:8px;font-size: 12px;">上傳付款憑證
-                        </div>
-                        <div style="font-size:12px;color:#666;margin-bottom:10px;">
+                        <div style="font-size:14px;color:#666;margin-bottom:10px;">
                             請上傳轉帳截圖做為憑證
                         </div>
 
@@ -231,7 +229,7 @@ onMounted(() => {
 .allar-top {
     display: flex;
     align-items: center;
-    color: #cc9b5a;
+    color: #000;
     background: #f7f7f7;
     height: 45px;
     border-bottom: 1px solid #ddd;
@@ -241,22 +239,22 @@ onMounted(() => {
     margin-left: 15px;
     font-size: 15px;
     font-weight: bold;
-    color: #8a6520;
+    color: #000;
 }
 
 .copy-btn {
     cursor: pointer;
     text-align: right;
     margin-left: auto;
-    background-color: #cc9b5a;
+    background-color: #cc5abd;
     border-radius: 6px;
-    color: #000;
+    color: #fff;
     font-size: 11px;
     padding: 3px 10px;
 }
 
 .confirm {
-    background: linear-gradient(360deg, #fac383 60%, #fff);
+    background-color: #2750c2;
     padding: 10px;
     border-radius: 6px;
     margin: 10px 20px;
@@ -264,21 +262,22 @@ onMounted(() => {
     cursor: pointer;
     font-size: 12px;
     font-weight: 700;
+    color: #fff;
 }
 
 .confirm:hover {
-    background: linear-gradient(360deg, #fca13a 60%, #fff);
+    background-color: #567ff1;
 }
 
 .upload-box {
     width: 100%;
     height: 120px;
-    border: 1px dashed #cc9b5a;
+    border: 1px dashed #9e9e9d;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #cc9b5a;
+    color: #000;
     cursor: pointer;
     overflow: hidden;
 }
@@ -290,22 +289,31 @@ onMounted(() => {
 }
 
 .copy-toast {
-      position: fixed;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(46, 46, 46, 0.8);
-    color: #333;
-    padding: 20px;
-    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.82);
+    color: #fff;
+    padding: 18px 24px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
     z-index: 9999;
-    min-width: 250px;
+    min-width: 160px;
+    max-width: 70%;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.6;
+    box-sizing: border-box;
 }
 
 .listadd {
     background-color: #f5f5f5;
-    color: #d3d3d3;
-    font-size: 13px;
+    color: #111;
+    font-size: 14px;
     padding: 10px 0;
 }
 
@@ -315,7 +323,7 @@ onMounted(() => {
     align-items: center;
     justify-content: center;
     padding: 5px 15px;
-    font-size: 11px;
+    font-size: 13px;
 }
 
 .brislid {
