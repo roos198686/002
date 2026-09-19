@@ -7,7 +7,8 @@
                     取消
                 </div>
                 <div class="allar-top-r">發布動態</div>
-                <div class="publish-btn" @click="submitPublish">發布</div>
+                <div class="publish-btn" :class="{ disabledBtn: !(imgList.length > 0 || videoItem || content) }"
+                    @click="submitPublish">發布</div>
             </div>
             <!-- 上传按钮�?-->
             <div class="upload-bar">
@@ -29,16 +30,9 @@
             <!-- 内容输入會員-->
             <div class="content-wrapper">
                 <div style="display: flex;padding: 0 15px;">
-                    <textarea 
-  ref="textDom" 
-  v-model="content" 
-  placeholder="分享你的動態..." 
-  class="publish-textarea"
-  @input="changeHeight" 
-  maxlength="700"
-  inputmode="text"
-  style="touch-action: manipulation;"
-></textarea>
+                    <textarea ref="textDom" v-model="content" placeholder="分享你的動態..." class="publish-textarea"
+                        @input="changeHeight" maxlength="700" inputmode="text"
+                        style="touch-action: manipulation;"></textarea>
                 </div>
                 <!-- 新增字数提示 -->
                 <div style="padding: 0 15px 10px; text-align: right; color:#666; font-size: 12px;">
@@ -256,13 +250,13 @@ const revokeAllObjectUrl = () => {
     if (videoItem.value) URL.revokeObjectURL(videoItem.value.preview)
 }
 const preventPageScroll = (e: TouchEvent) => {
-  // 阻止页面整体滑动'
-  e.preventDefault()
+    // 阻止页面整体滑动'
+    e.preventDefault()
 }
 
 onMounted(() => {
-  // 给根元素绑定事件'
-  document.body.addEventListener('touchmove', preventPageScroll, { passive: false })
+    // 给根元素绑定事件'
+    document.body.addEventListener('touchmove', preventPageScroll, { passive: false })
 })
 
 onUnmounted(() => {
@@ -272,18 +266,20 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-html, body {
-  width: 100%;
-  height: 100%;
-  /* 禁止滚动态数据+ 禁止滑动 */
-  overflow: hidden;
-  /* 禁用页面拖拽、滚动穿�?*/
-  touch-action: none;
-  margin: 0;
-  padding: 0;
+html,
+body {
+    width: 100%;
+    height: 100%;
+    /* 禁止滚动态数据+ 禁止滑动 */
+    overflow: hidden;
+    /* 禁用页面拖拽、滚动穿�?*/
+    touch-action: none;
+    margin: 0;
+    padding: 0;
 }
+
 .main {
-   position: absolute;
+    position: absolute;
     left: 0;
     right: 0;
     top: 0;
@@ -292,7 +288,8 @@ html, body {
     height: 100%;
     background: #fff;
     font-family: "Microsoft YaHei", sans-serif;
-    overflow: hidden; /* 全局禁止滚动 */
+    overflow: hidden;
+    /* 全局禁止滚动 */
 }
 
 .publish-container {
@@ -303,7 +300,7 @@ html, body {
     background-color: #fff;
     display: flex;
     flex-direction: column;
-    
+
 }
 
 .allar-top {
@@ -311,7 +308,8 @@ html, body {
     align-items: center;
     justify-content: space-between;
     padding: 9px 0;
-    background: #e9e8e8;
+    padding-top: calc(9px + env(safe-area-inset-top));
+    background: #f7f7f7;
     flex-shrink: 0;
     z-index: 999;
     height: 25px;
@@ -332,15 +330,20 @@ html, body {
 }
 
 .publish-btn {
-    background-color: rgb(105, 0, 131);
+    background-color: #ff33ee;
     padding: 5px 15px;
     font-size: 14px;
     border-radius: 4px;
-    color: #333;
+    color: #fff;
     cursor: pointer;
     margin-right: 15px;
 }
-
+.publish-btn.disabledBtn {
+    pointer-events: none;
+    cursor: not-allowed;
+    opacity: 0.6;
+    color: #fff;
+}
 .content-wrapper {
     flex: 1;
     /* padding-top: 10px; */
@@ -438,12 +441,21 @@ html, body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(46, 46, 46, 0.8);
-    color: #333;
-    padding: 20px;
-    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.82);
+    color: #fff;
+    padding: 18px 24px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
     z-index: 9999;
-    min-width: 250px;
+    min-width: 160px;
+    max-width: 70%;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.6;
+    box-sizing: border-box;
 }
 
 .custom-modal {
@@ -452,24 +464,27 @@ html, body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.192);
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 9999;
-    color: #666;
+    color: #fff;
 }
 
 .modal-box {
-    background: #000000b4;
-    border-radius: 12px;
-    padding: 20px 20px 50px 20px;
+    background: rgba(0, 0, 0, 0.82);
+    border-radius: 14px;
+    padding: 24px 28px;
     display: flex;
     flex-direction: column;
     min-width: 200px;
+    max-width: 72%;
     text-align: center;
     align-items: center;
     justify-content: center;
+    gap: 10px;
+    box-sizing: border-box;
 }
 
 ::-webkit-scrollbar {
