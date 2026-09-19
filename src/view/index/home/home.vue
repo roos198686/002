@@ -224,7 +224,7 @@ onUnmounted(() => {
     right: 0;
     max-width: 500px;
     margin: 0 auto;
-    padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); 
+    padding: 6px 0 calc(6px + env(safe-area-inset-bottom));
     background: #f3f3f3;
     z-index: 999;
 }
