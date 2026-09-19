@@ -30,6 +30,11 @@ jobs:
       - name: Sync web assets to iOS
         run: npx cap sync ios
 
+      # Capacitor 8 只註冊 capacitor.config.json 白名單內的插件，
+      # 手工內建的 AppPermission 需在 sync 後注入 packageClassList
+      - name: Register custom AppPermission plugin
+        run: node scripts/inject-ios-plugin.cjs
+
       # 無簽名構建（真機 arm64），SPM 自動解析 Capacitor 依賴
       - name: Build unsigned App.app (iphoneos)
         working-directory: ios/App
