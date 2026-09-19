@@ -3,7 +3,7 @@
         <div class="register-container">
             <div class="register-all">
                 <div class="allar-top">
-                    <div @click="goBack" style="margin-left: 10px;cursor: pointer;color: #a88035;width: 40px;">
+                    <div @click="goBack" style="margin-left: 10px;cursor: pointer;color: #000;width: 40px;">
                         <Icon icon="material-symbols:arrow-back-ios-rounded" width="18" />
                     </div>
                     <div class="allar-top-a">點數兌換</div>
@@ -14,7 +14,7 @@
 
                 <div class="content-wrapper">
                     <div class="cuekdil">
-                        <div style="display:flex;flex-direction:column;justify-content:center;align-items:center;">
+                        <div class="cuekdil-a">
                             <div style="width:100%;">
                                 <input class="form-input" v-model="searchKey"
                                     :placeholder="!userInfo.balance ? '可提領上限：0' : '可提領上限：' + userInfo.balance" />
@@ -330,7 +330,7 @@ watch(() => route.path, () => {
 .allar-top-a {
     font-size: 15px;
     font-weight: bold;
-    color: #8a6520;
+    color: #000;
     text-align: center;
     width: 100%;
 }
@@ -350,9 +350,20 @@ watch(() => route.path, () => {
     width: 100%;
     min-height: 100%;
     background: #f5f5f5;
+    /* padding: 15px; */
+}
+
+.cuekdil-a {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    flex: 1;
 }
 
 .form-input {
+    margin-left: 5%;
     width: 90%;
     height: 38px;
     padding: 0 15px;
@@ -372,12 +383,13 @@ watch(() => route.path, () => {
     border-radius: 50px;
     font-size: 14px;
     line-height: 38px;
-    color: #740950;
+    color: #fff;
     font-weight: 800;
-    background: linear-gradient(360deg, #fa83e6 60%, #fff);
+    background-color: #2c51a1;
     cursor: pointer;
     margin-bottom: 15px;
     box-sizing: border-box;
+    text-align: center;
 }
 
 .submit {
@@ -423,12 +435,21 @@ watch(() => route.path, () => {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(46, 46, 46, 0.8);
-    color: #333;
-    padding: 20px;
-    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.82);
+    color: #fff;
+    padding: 18px 24px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
     z-index: 9999;
-    min-width: 250px;
+    min-width: 160px;
+    max-width: 70%;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.6;
+    box-sizing: border-box;
 }
 
 ::-webkit-scrollbar {
