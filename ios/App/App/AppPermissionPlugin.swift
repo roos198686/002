@@ -60,6 +60,8 @@ public class AppPermissionPlugin: CAPPlugin {
         switch status {
         case .authorized:
             call.resolve(["granted": true])
+        case .limited:
+            call.resolve(["granted": true])
         case .denied, .restricted:
             call.resolve(["granted": false])
         case .notDetermined:
