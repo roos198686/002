@@ -1,0 +1,80 @@
+name: Build Unsigned iOS IPA
+
+# 手動觸發：GitHub 倉庫頁 -> Actions -> 左側選 "Build Unsigned iOS IPA" -> Run workflow
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # 只跑 vite 打包（跳過 vue-tsc，倉庫內有歷史遺留型別錯誤不影響產物）
+      - name: Build web assets
+        run: npx vite build
+
+      - name: Add iOS platform
+        run: npx cap add ios
+
+      # Capacitor 8 / Xcode 16 的 ios/App/App 為「檔案同步群組」，
+      # 複製進去的原始檔會自動加入 App target，無需手動修改 pbxproj
+      - name: Install AppPermission native plugin sources
+        run: |
+          cp native-plugins/ios/AppPermissionPlugin.swift ios/App/App/
+          cp native-plugins/ios/AppPermissionPlugin.m ios/App/App/
+
+      - name: Inject privacy usage descriptions (Info.plist)
+        run: |
+          PLIST=ios/App/App/Info.plist
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string 需要存取您的相簿，以便選取並上傳圖片（如頭像、商品圖片）。" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :NSContactsUsageDescription string 需要存取您的通訊錄，以便您快速邀請聯絡人成為好友。" "$PLIST"
+
+      - name: Install CocoaPods dependencies
+        working-directory: ios/App
+        run: pod install
+
+      # 無簽名構建（真機 arm64 架構），產出 App.app
+      - name: Build unsigned App.app (iphoneos)
+        working-directory: ios/App
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath ./derived \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGN_ENTITLEMENTS="" \
+            build
+
+      # 按標準結構 Payload/App.app 打包成可重簽名的無簽名 IPA
+      - name: Package unsigned IPA
+        working-directory: ios/App
+        run: |
+          mkdir -p Payload
+          cp -r derived/Build/Products/Release-iphoneos/App.app Payload/
+          zip -qr SKS-unsigned.ipa Payload
+          ls -lh SKS-unsigned.ipa
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SKS-unsigned-IPA
+          path: ios/App/SKS-unsigned.ipa
+          retention-days: 30
