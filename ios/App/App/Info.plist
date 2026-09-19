@@ -28,6 +28,8 @@
 	<string>需要存取您的相簿，以便選取並上傳圖片（如頭像、商品圖片）。</string>
 	<key>NSContactsUsageDescription</key>
 	<string>需要存取您的通訊錄，以便您快速邀請聯絡人成為好友。</string>
+	<key>NSCameraUsageDescription</key>
+	<string>需要使用相機，以便拍攝照片或影片並上傳。</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
