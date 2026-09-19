@@ -2,28 +2,25 @@
     <div class="main">
         <div class="register-container">
             <div class="register-all">
-                <!-- 頂部標題�?-->
-                <div class="allar-top">
-                    <div @click="goBack" class="back-icon">
-                        <Icon icon="material-symbols:arrow-back-ios-rounded" width="18" />
-                    </div>
-                    <div class="allar-top-a">{{ shopName || nickname }}的小店</div>
-                </div>
-
                 <!-- 滾動內容區 -->
                 <div class="content-wrapper">
                     <div class="cuekdil">
                         <!-- 店鋪資訊卡片 -->
                         <div class="shop-info-card">
-                            <div class="shop-avatar">
-                                <img :src="getShopAvatar()" alt="店鋪頭像" />
+                            <div @click="goBack" class="back-icon">
+                                <Icon icon="material-symbols:arrow-back-ios-rounded" width="18" />
                             </div>
-                            <div class="shop-desc">
-                                <div class="shop-name">{{ shopName || nickname || '未命名店鋪' }}</div>
-                                <div class="shop-tip">
-                                    商品總數：{{ goodsTotal }} | 已上架：{{ onSaleNum }}
+                            <div style="display: flex;flex-direction: row;">
+                                <div class="shop-avatar">
+                                    <img :src="getShopAvatar()" alt="店鋪頭像" />
                                 </div>
-                                <div class="shop-intro">{{ shopDesc || '暫無店鋪簡介' }}</div>
+                                <div class="shop-desc">
+                                    <div class="shop-name">{{ shopName || nickname || '未命名店鋪' }}</div>
+                                    <div class="shop-tip">
+                                        商品總數：{{ goodsTotal }} | 已上架：{{ onSaleNum }}
+                                    </div>
+                                    <div class="shop-intro">{{ shopDesc || '暫無店鋪簡介' }}</div>
+                                </div>
                             </div>
                         </div>
 
@@ -79,7 +76,8 @@
                                     <div class="goods-operate" v-if="item.user_id === userid">
                                         <div class="operate-btn edit" @click="goEditGoods(item, $event)">編輯</div>
                                         <div class="operate-btn" :class="item.status === 1 ? 'change-status'
-                                            : 'change-status-a'" @click=" changeGoodsStatus(item.id, item.status, $event)">
+                                            : 'change-status-a'"
+                                            @click=" changeGoodsStatus(item.id, item.status, $event)">
                                             {{ item.status === 1 ? '下架' : '上架' }}
                                         </div>
                                     </div>
@@ -176,7 +174,7 @@
                         <div class="avatar-upload">
                             <!-- 預覽展示區：-->
                             <div class="avatar-preview" @click="triggerShopAvatarFile">
-                                <img :src="shopAvatarPreview" alt="頭像" />
+                                <img :src="shopAvatarPreview" alt="" />
                                 <!-- 浮層文字 -->
                                 <div class="avatar-mask">
                                     <span v-if="!hasNewShopFile">點擊選圖</span>
@@ -263,29 +261,34 @@ const getShopAvatar = () => {
 
 //获取店铺主页信息  用户信息'
 const getUserId = async () => {
-    const user_id = route.query.id || route.params.id
-    if (!user_id) return
+  const user_id = route.query.id || route.params.id
+  if (!user_id) return
+  try {
+    const { data: res } = await request.post('/api/myshop/info', { user_id: user_id })
+    if (res.code === 1) {
+      const user = res.data || {}
+      username.value = user.username || ''
+      nickname.value = user.nickname || ''
+      myavatar.value = user.avatar || ''
+      userId.value = user.id || 0
+      shopName.value = user.shop_name || ''
+      shopDesc.value = user.shop_desc || ''
+      shopAvatarUrl.value = user.shop_avatar || ''
 
-    try {
-        const { data: res } = await request.post('/api/myshop/info', { user_id: user_id })
-        if (res.code === 1) {
-            // 直接收res.data，不再多了.user
-            const user = res.data || {}
-            username.value = user.username || ''
-            nickname.value = user.nickname || ''
-            myavatar.value = user.avatar || ''
-            userId.value = user.id || 0
+      // ============ 新增：同步更新localStorage ============
+      const localUser = JSON.parse(localStorage.getItem('user') || '{}')
+      localUser.shop_name = shopName.value
+      localUser.shop_desc = shopDesc.value
+      localUser.shop_avatar = shopAvatarUrl.value
+      localStorage.setItem('user', JSON.stringify(localUser))
 
-            // 注意：后端字段是 intro，你前端用的 shopDesc，对应替�?
-            shopName.value = user.shop_name || ''
-            shopDesc.value = user.shop_desc || ''
-            shopAvatarUrl.value = user.shop_avatar || ''
-            loadMyGoods()
-        }
-    } catch (err) {
-        console.error('獲取店鋪資訊失敗：', err)
+      loadMyGoods()
     }
+  } catch (err) {
+    console.error('獲取店鋪資訊失敗：', err)
+  }
 }
+
 
 // ========== 編輯商品彈窗 ==========
 const editDialogVisible = ref(false)
@@ -406,27 +409,33 @@ const tempShopImgUrl = ref('')             // 暫存blob位址'
 
 // 開啟彈窗+回顯資料'
 const openShopPopup = () => {
-    const user = JSON.parse(localStorage.getItem('user') || '{}')
-    shopForm.shop_name = user.shop_name || ''
-    shopForm.shop_desc = user.shop_desc || ''
-    shopForm.shop_avatar = user.shop_avatar || ''
+  // 優先使用當前頁面已經加載完成的店鋪數據（接口來源，權重最高）
+  shopForm.shop_name = shopName.value
+  shopForm.shop_desc = shopDesc.value
+  shopForm.shop_avatar = shopAvatarUrl.value
 
-    // 回顯原有頭像'
-    if (user.shop_avatar) {
-        shopAvatarPreview.value = baseURL + user.shop_avatar
-    } else {
-        shopAvatarPreview.value = ''
-    }
+  // url拼接工具，自動處理 baseURL 末尾 / 避免 //
+  const joinUrl = (base: string, path: string) => {
+    if (!base) return path
+    return base.replace(/\/$/, '') + '/' + path.replace(/^\//, '')
+  }
 
-    // 重設上傳狀態'
-    hasNewShopFile.value = false
-    if (tempShopImgUrl.value) {
-        URL.revokeObjectURL(tempShopImgUrl.value)
-        tempShopImgUrl.value = ''
-    }
+  // 回顯頭像
+  if (shopAvatarUrl.value) {
+    shopAvatarPreview.value = joinUrl(baseURL, shopAvatarUrl.value)
+  } else {
+    shopAvatarPreview.value = ''
+  }
 
-    shopPopupShow.value = true
+  // 重置上傳狀態
+  hasNewShopFile.value = false
+  if (tempShopImgUrl.value) {
+    URL.revokeObjectURL(tempShopImgUrl.value)
+    tempShopImgUrl.value = ''
+  }
+  shopPopupShow.value = true
 }
+
 
 const closeShopPopup = () => {
     shopPopupShow.value = false
@@ -580,9 +589,10 @@ onUnmounted(() => {
 
 /* 頂部標題 */
 .back-icon {
-    color: #a88350;
+    color: #000000;
     cursor: pointer;
-    margin-left: 15px;
+    margin-bottom: 15px;
+    /* margin-left: 15px; */
 }
 
 .allar-top {
@@ -612,7 +622,7 @@ onUnmounted(() => {
 /* 滾動內容區 */
 .content-wrapper {
     position: absolute;
-    top: 45px;
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
@@ -632,6 +642,7 @@ onUnmounted(() => {
 /* 店鋪資訊卡片 */
 .shop-info-card {
     display: flex;
+    flex-direction: column;
     background: linear-gradient(375deg, #ff33ee 0%, #ecc97f 50%, #fff 100%);
     padding: 15px 25px 35px 25px;
     text-align: left;
@@ -832,12 +843,21 @@ onUnmounted(() => {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(46, 46, 46, 0.8);
-    color: #333;
-    padding: 20px;
-    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.82);
+    color: #fff;
+    padding: 18px 24px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
     z-index: 9999;
-    min-width: 250px;
+    min-width: 160px;
+    max-width: 70%;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.6;
+    box-sizing: border-box;
 }
 
 .toast-text {
@@ -887,17 +907,17 @@ onUnmounted(() => {
     justify-content: space-between;
     align-items: center;
     padding: 15px;
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid #c5c5c5;
 }
 
 .popup-header .title {
     font-size: 16px;
-    color: #8a6a30;
+    color: #000;
 }
 
 .close-btn {
     font-size: 22px;
-    color: #666;
+    color: #383838;
     cursor: pointer;
 }
 
@@ -920,7 +940,7 @@ onUnmounted(() => {
     display: block;
     margin-bottom: 5px;
     font-size: 13px;
-    color: #666;
+    color: #383838;
     width: 80px;
     margin-right: 5px;
 }
@@ -1040,7 +1060,7 @@ onUnmounted(() => {
 
 .form-item label {
     display: block;
-    color: #666;
+    color: #313131;
     margin-bottom: 8px;
     font-size: 13px;
 }
@@ -1088,7 +1108,7 @@ onUnmounted(() => {
     display: flex;
     gap: 10px;
     padding: 15px;
-    border-top: 1px solid #444;
+    border-top: 1px solid #dadada;
 }
 
 .btn {
