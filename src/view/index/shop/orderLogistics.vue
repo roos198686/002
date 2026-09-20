@@ -3,7 +3,7 @@
         <div class="register-container">
             <div class="register-all" ref="scrollWrap">
                 <div class="allar-top">
-                    <div @click="goBack" style="margin-left: 10px;cursor: pointer;color: #a88035;width: 30px;">
+                    <div @click="goBack" style="margin-left: 10px;cursor: pointer;color: #000;width: 30px;">
                         <Icon icon="material-symbols:arrow-back-ios-rounded" width="18" />
                     </div>
                     <div class="allar-top-a">我的訂單</div>
@@ -351,7 +351,7 @@ onUnmounted(() => {
     display: flex;
     gap: 20px;
     margin-bottom: 0px;
-    border-bottom: 1px solid #ff33ee;
+    /* border-bottom: 1px solid #ff33ee; */
 }
 .tab-item {
     padding-bottom: 5px;
@@ -616,7 +616,7 @@ onUnmounted(() => {
 .allar-top-a {
     font-size: 15px;
     font-weight: bold;
-    color: #8a6520;
+    color: #000;
     text-align: center;
     flex: 1;
 }

@@ -487,7 +487,7 @@ onUnmounted(() => {
 .allar-top-a {
     font-size: 15px;
     font-weight: bold;
-    color: #8a6520;
+    color: #000;
     text-align: center;
     flex: 1;
     margin-left: 40px;

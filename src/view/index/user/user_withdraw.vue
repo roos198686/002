@@ -121,7 +121,7 @@ const loadUserInfo = async () => {
         const user = JSON.parse(u);
         const userId = user.id || user.userId;
 
-        const { data: res } = await request.post('/api/user/info', { user_id: userId });
+        const { data: res } = await request.post('/api/user/user/info', { user_id: userId });
         if (res.code === 1 && res.data) {
             userInfo.username = res.data.username || '';
             userInfo.balance = res.data.balance || '';

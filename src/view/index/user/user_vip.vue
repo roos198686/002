@@ -4,7 +4,7 @@
             <div class="register-all">
                 <!-- 頂部標題 -->
                 <div class="allar-top">
-                    <div @click="goBack" style="margin-left: 10px;cursor: pointer;color: #a88035;width: 30px;">
+                    <div @click="goBack" style="margin-left: 10px;cursor: pointer;color: #000;width: 30px;">
                         <Icon icon="material-symbols:arrow-back-ios-rounded" width="18" />
                     </div>
                     <div class="allar-top-a">VIP 管理</div>
@@ -14,7 +14,7 @@
                 <div class="content-wrapper">
                     <div class="cuekdil">
                         <div style="display: flex;flex-direction: row;padding-top: 20px;align-items: center;">
-                            <div style="color: #cc9b5a;font-weight: bold;font-size: 14px;padding-left: 20px;">
+                            <div style="color: #000;font-weight: bold;font-size: 14px;padding-left: 20px;">
                                 目前等級：
                                 <span style="color: #e64dde;">{{ userInfo.vip ? 'VIP' + userInfo.vip : '一般會員' }}</span>
                             </div>
@@ -28,7 +28,7 @@
                                 </div>
                                 <div
                                     style="display: flex;flex-direction: column;text-align: left;width:25%;justify-content: center;margin-left: 10px;">
-                                    <div style="color: #cc9b5a;font-weight: bold;font-size: 15px;">VIP{{ item.vip_level
+                                    <div style="color: #d400ca;font-weight: bold;font-size: 15px;">VIP{{ item.vip_level
                                         }}</div>
                                     <div style="color:#666;font-size: 12px;">儲值金額{{ item.recharge_amount }}</div>
                                 </div>
@@ -179,7 +179,7 @@ const loadUserInfo = async () => {
         const user = JSON.parse(u);
         const userId = user.id || user.userId;
 
-        const { data: res } = await request.post('/api/user/info', { user_id: userId });
+        const { data: res } = await request.post('/api/user/user/info', { user_id: userId });
         if (res.code === 1 && res.data) {
             const data = res.data;
             userInfo.balance = data.balance || '0'
@@ -254,7 +254,7 @@ onMounted(() => {
 .allar-top-a {
     font-size: 15px;
     font-weight: bold;
-    color: #8a6520;
+    color: #000;
     text-align: center;
     width: 100%;
     margin-right: 40px;
@@ -289,7 +289,7 @@ onMounted(() => {
     flex-direction: row;
     padding: 15px 20px;
     border-radius: 5px;
-    box-shadow: 0 0 1px 1px rgb(20, 20, 20);
+    box-shadow: 0 0 1px 1px rgb(226, 226, 226);
     margin-bottom: 15px;
     background-color: #f5f5f5;
 }
@@ -308,14 +308,15 @@ onMounted(() => {
 }
 
 .upgrade--active {
-    background-color: #a1a1a1;
-    box-shadow: 0 0 1px 1px rgb(20, 20, 20);
+    background-color: #f5d1fc;
+    box-shadow: 0 0 1px 1px rgb(226, 149, 245);
 }
 
 .upgrade--disabled {
-    background-color: #f5f5f5;
-    box-shadow: 0 0 1px 1px rgb(20, 20, 20);
+    background-color: #888888;
+    box-shadow: 0 0 1px 1px rgb(114, 114, 114);
     pointer-events: none;
+    color: #fff;
 }
 
 .copy-toastas {

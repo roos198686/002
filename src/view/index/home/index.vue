@@ -216,7 +216,6 @@ import router from '../../../router';
 import request from '@/utils/request';
 import moment from 'moment';
 import { useDynamicStore } from '@/stores/dynamic'
-import { getCollectList, addCollectSnapshot, removeCollectSnapshot } from '@/utils/collectStore';
 const dynamicStore = useDynamicStore()
 const baseURL = request.defaults.baseURL || '';
 // 圖片載入失敗兜底�?
@@ -245,19 +244,6 @@ const getCache = () => {
     return cache;
 };
 
-// ========== 收藏動態本地快照（收藏列表數據源） ==========
-// 用 Pinia 最新狀態同步單條動態
-const syncItemFromStore = (item: any) => {
-    const storeItem = dynamicStore.getDynamicById(item.dynamic_id);
-    return storeItem ? {
-        ...item,
-        isLike: storeItem.isLike,
-        like_num: storeItem.like_num,
-        isCollect: storeItem.isCollect,
-        collect_num: storeItem.collect_num,
-        comment_num: storeItem.comment_num
-    } : item;
-};
 // 【新增】跳转到发布页面'
 const goToPublish = () => {
     // 替换成你实际的发布页路由地址'
@@ -553,26 +539,6 @@ const getUserDetail = async (isRefresh = false) => {
     const tabCache = getCache();
     const cache = tabCache[currTab];
 
-    // 收藏標籤：從本地快照讀取，不走網絡
-    if (currTab === 1) {
-        if (isRefresh) {
-            cache.list = [];
-            cache.page = 1;
-        }
-        cache.list = getCollectList().map(syncItemFromStore);
-        cache.finished = true;
-        cache.loaded = true;
-        setCache(tabCache);
-        dynamicStore.setDynamicList(cache.list);
-        dynamicList.value = cache.list;
-        finished.value = true;
-        page.value = 1;
-        loading.value = false;
-        isRefreshing.value = false;
-        pullDistance.value = 0;
-        return;
-    }
-
     // 下拉刷新：重置当前标�?
     if (isRefresh) {
         cache.page = 1;
@@ -582,6 +548,7 @@ const getUserDetail = async (isRefresh = false) => {
 
     const excludeIds = cache.list.map(item => item.dynamic_id);
     try {
+        // tabType：0=推薦，1=收藏（後端按登錄用戶 id 返回其收藏的動態）
         const { data: res } = await request.post('/api/index/userimages', {
             page: cache.page,
             limit: 10,
@@ -686,7 +653,7 @@ const switchTab = (index: number) => {
 
     // ========== 此处修改开始聊天==========
     // 切换标签前，先同意註冊Pinia 最新状态到目标标签缓存'
-    targetCache.list = targetCache.list.map(item => {
+    targetCache.list = targetCache.list.map((item: any) => {
         const storeItem = dynamicStore.getDynamicById(item.dynamic_id)
         return storeItem ? {
             ...item,
@@ -811,18 +778,12 @@ const toggleCollect = async (item: any) => {
             }
             setCache(tabCache);
 
-            // 同步收藏快照（收藏標籤數據源）
-            if (newCollect) {
-                addCollectSnapshot(item);
-            } else {
-                removeCollectSnapshot(item.dynamic_id);
-                // 收藏標籤內取消收藏：從當前列表移除
-                if (currTab === 1) {
-                    tabCache[1].list = tabCache[1].list.filter((c: any) => c.dynamic_id !== item.dynamic_id);
-                    setCache(tabCache);
-                    dynamicList.value = tabCache[1].list;
-                    dynamicStore.setDynamicList(dynamicList.value);
-                }
+            // 收藏標籤內取消收藏：從當前列表移除
+            if (!newCollect && currTab === 1) {
+                tabCache[1].list = tabCache[1].list.filter((c: any) => c.dynamic_id !== item.dynamic_id);
+                setCache(tabCache);
+                dynamicList.value = tabCache[1].list;
+                dynamicStore.setDynamicList(dynamicList.value);
             }
 
         } else {
@@ -1060,8 +1021,6 @@ onUnmounted(() => {
 .allar-top-tabs {
     flex: 1;
     display: flex;
-    align-items: center;
-    justify-content: center;
     gap: 38px;
     margin-right: 30px;
 }

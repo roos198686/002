@@ -40,7 +40,7 @@
                                             </select>
                                         </div>
                                         <div class="num-box">
-                                            <div class="num-btn" @click.stop="updateNum(item, -1)">h.j</div>
+                                            <div class="num-btn" @click.stop="updateNum(item, -1)">-</div>
                                             <div class="num-text">{{ item.number }}</div>
                                             <div class="num-btn" @click.stop="updateNum(item, 1)">+</div>
                                         </div>
@@ -166,7 +166,7 @@
                     </div>
                     <div class="err-text" v-if="pwdErrMsg">{{ pwdErrMsg }}</div>
                     <div class="popup-submit" @click="submitSetFundPwd"
-                        :style="{ background: loadingpay ? '#ccc' : '' }">
+                        :style="{ background: loadingPay ? '#ccc' : '' }">
                         {{ loadingPay ? '提交中' : '確認設定' }}
                     </div>
                 </div>

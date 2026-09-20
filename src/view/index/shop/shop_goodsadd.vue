@@ -322,7 +322,7 @@ onUnmounted(() => {
 .allar-top-a {
     font-size: 15px;
     font-weight: bold;
-    color: #8a6520;
+    color: #000;
     text-align: center;
     width: 100%;
     margin-right: 25px;
@@ -330,7 +330,7 @@ onUnmounted(() => {
 
 /* 頂部標題 */
 .back-icon {
-    color: #a88350;
+    color: #000;
     cursor: pointer;
     margin-left: 15px;
 }

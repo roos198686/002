@@ -4,7 +4,7 @@
             <div class="register-all">
                 <!-- 顶部 -->
                 <div class="allar-top">
-                    <div @click="goBack" style="margin-left: 10px;cursor: pointer;color: #a88035;width: 30px;">
+                    <div @click="goBack" style="margin-left: 10px;cursor: pointer;color: #000;width: 30px;">
                         <Icon icon="material-symbols:arrow-back-ios-rounded" width="18" />
                     </div>
                     <div class="allar-top-a">我的訂單</div>
@@ -13,7 +13,6 @@
                 <div class="order-tabs"
                     style="position: fixed;top: calc(45px + env(safe-area-inset-top));left: 0;right: 0;max-width: 500px;margin: 0 auto;z-index: 998;">
                     <div class="tab-item" :class="activeTab === '' ? 'active' : ''" @click="switchTab('')">全部</div>
-                    <!-- <div class="tab-item" :class="activeTab === '1' ? 'active' : ''" @click="switchTab('1')">待付款成功</div> -->
                     <div class="tab-item" :class="activeTab === '2' ? 'active' : ''" @click="switchTab('2')">待出貨</div>
                     <div class="tab-item" :class="activeTab === '3' ? 'active' : ''" @click="switchTab('3')">待收貨</div>
                     <div class="tab-item" :class="activeTab === '4' ? 'active' : ''" @click="switchTab('4')">已完成</div>
@@ -330,7 +329,7 @@ watch(() => route.path, () => { }, { immediate: true });
     left: 50%;
     transform: translateX(-50%);
     width: 30px;
-    height: 2px;
+    height: 3px;
     background: #f801cf;
     border-radius: 1px;
 }
@@ -385,7 +384,7 @@ watch(() => route.path, () => { }, { immediate: true });
 .allar-top-a {
     font-size: 15px;
     font-weight: bold;
-    color: #8a6520;
+    color: #000;
     text-align: center;
     width: 100%;
     margin-right: 40px;
@@ -481,8 +480,8 @@ watch(() => route.path, () => { }, { immediate: true });
     display: inline-block;
     background: #f15bff;
     color: #000;
-    font-size: 11px;
-    padding: 1px 10px;
+    font-size: 13px;
+    padding: 3px 10px;
     border-radius: 5px;
     cursor: pointer;
     text-align: left;

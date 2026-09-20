@@ -636,6 +636,7 @@ onUnmounted(() => {
     color: #fff;
     text-align: right;
     margin-left: auto;
+    cursor: pointer;
 }
 
 .terxtimage {

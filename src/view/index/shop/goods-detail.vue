@@ -950,7 +950,7 @@ onMounted(() => {
     justify-content: center;
     font-size: 18px;
     border-radius: 8px;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.452);
     color: #ffffff;
     cursor: pointer;
 }
@@ -1161,7 +1161,6 @@ onMounted(() => {
 .detail-card {
     padding: 15px 0 35px 0;
     margin-top: -15px;
-    border-radius: 25px 25px 0 0;
     background-color: #faedf7;
 }
 
@@ -1171,9 +1170,9 @@ onMounted(() => {
     font-weight: bold;
     margin-top: -25px;
     margin-bottom: 20px;
-    border-radius: 25px 25px 0 0;
+    border-radius: 10px 10px 0 0;
     padding: 10px 15px;
-    background-color: #fdbef3;
+    background-color: #fda4ee;
 }
 
 .spec-group {
@@ -1222,16 +1221,12 @@ onMounted(() => {
 
 .detail-cardaa {
     background: #e8e8e8;
-    /* padding-top: 15px; */
-    /* margin-top: -25px; */
-    border-radius: 25px 25px 0 0;
 }
 .card-titlea {
     color: #ffffff;
     font-size: 15px;
     font-weight: bold;
     margin-top: -25px;
-    /* margin-bottom: 20px; */
     border-radius: 10px 10px 0 0;
     padding: 10px 15px;
     background-color: #d102af;
@@ -1303,7 +1298,7 @@ onMounted(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: bold;
     cursor: pointer;
     
@@ -1314,14 +1309,13 @@ onMounted(() => {
     height: 32px;
     background: #db01c9;
     color: #fff;
-    border-radius: 8px;
+    border-radius:0 8px 8px 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: bold;
     cursor: pointer;
-    margin-left: -15px;
 }
 
 /*弹窗通用样式*/

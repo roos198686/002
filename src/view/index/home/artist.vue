@@ -245,7 +245,6 @@ import { Icon } from '@iconify/vue';
 import router from '../../../router'
 import { useRoute } from 'vue-router';
 import request from '@/utils/request';
-import { addCollectSnapshot, removeCollectSnapshot } from '@/utils/collectStore';
 import moment from 'moment';
 
 const showToast = ref<boolean>(false);
@@ -567,13 +566,6 @@ const toggleCollect = async (item: any) => {
                     }
                 })
                 localStorage.setItem('tab_all_cache', JSON.stringify(cacheArr));
-            }
-
-            // 同步收藏快照（首頁收藏標籤數據源）
-            if (newCollect) {
-                addCollectSnapshot(item);
-            } else {
-                removeCollectSnapshot(item.dynamic_id);
             }
         } else {
             item.isCollect = oldIsCollect;

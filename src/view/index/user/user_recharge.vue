@@ -16,10 +16,8 @@
                                 </div>
                             </div>
                             <div class="buttall">
-                                <div class="buttallone"
-                                    style="display: flex;flex-direction: row;justify-content: center;">
-                                    <div>儲值金額：$</div>
-                                    <div><input class="form-inputtext" v-model="amount" type="text" /></div>
+                                <div class="buttallone">
+                                    儲值金額：$<input class="form-inputtext" v-model="amount" type="text" />
                                 </div>
                                 <div class="buttalltwo">
                                     <div class="buttalltwo-a">快速選擇金額</div>
@@ -261,16 +259,14 @@ onMounted(() => {
 }
 
 .butttop {
-    background-color: #e73601e3;
+    background-color: #fd460e;
     height: 120px;
     display: flex;
     flex-direction: column;
-    z-index: 9999;
+    z-index: 999999;
     position: relative;
     border-bottom-left-radius: 60% 40px;
     border-bottom-right-radius: 60% 40px;
-    /* justify-content: center;
-    align-items: center; */
     font-weight: bolder;
     font-size: 20px;
     padding-top: env(safe-area-inset-top);
@@ -281,6 +277,7 @@ onMounted(() => {
     flex-direction: row;
     justify-content: center;
     align-items: center; 
+    color: #f3f702;
 }
 .butttop-b {
     margin:10px 15px;
@@ -298,20 +295,21 @@ onMounted(() => {
     border-radius: 12px;
     height: 100%;
     position: relative;
+    color: #fff;
 }
 
 .butttoptwo {
-    color: #f8d0f5;
+    color: #fff;
 }
 
 .buttallone {
-    padding: 80px 0 10px 0;
-    color: #000;
-    border-width: 0 0 1px 0;
-    border-style: solid;
-    border-color: #ddd;
-    font-size: 18px;
+    background-color: #fcabf8;
+    border-radius: 20px;
+    padding: 80px 20px 10px 20px;
+    font-size: 14px;
     font-weight: 900;
+    color: #000;
+    text-align: center;
 }
 
 .buttalltwo {
@@ -407,9 +405,10 @@ onMounted(() => {
     padding: 0 5px;
     font-size: 18px;
     font-weight: 800;
+    width: 200px;
     color: #fc02a8;
-    outline: none;
-    transition: border-color 0.3s;
+    /* outline: none; */
+    /* transition: border-color 0.3s; */
     background-color: #47444700;
     border: none;
     font-size: 20px;

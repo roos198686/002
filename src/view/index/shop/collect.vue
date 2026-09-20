@@ -4,7 +4,7 @@
             <div class="register-all">
                 <!-- 顶部 -->
                 <div class="allar-top">
-                    <div @click="goBack" style="margin-left: 10px;cursor: pointer;color: #a88035;width: 30px;">
+                    <div @click="goBack" style="margin-left: 10px;cursor: pointer;color: #000;width: 30px;">
                         <Icon icon="material-symbols:arrow-back-ios-rounded" width="18" />
                     </div>
                     <div class="allar-top-a">我的收藏</div>
@@ -27,7 +27,7 @@
                                                 <div style="display:flex; gap:5px;padding-bottom:5px;">
                                                     <div style="color:#333;font-size: 11px;">顏色</div>
                                                     <div v-for="(c, i) in item.color.split('/')" :key="i"
-                                                        style="background:#555; padding:2px 6px; border-radius:3px; font-size:11px; color:#333;">
+                                                        style="background:#8cf7ca; padding:2px 6px; border-radius:3px; font-size:11px; color:#333;">
                                                         {{ c }}
                                                     </div>
                                                 </div>
@@ -36,7 +36,7 @@
                                                 <div style="display:flex; gap:5px;padding-bottom:5px;">
                                                     <div style="color:#333;font-size: 11px;">規格</div>
                                                     <div v-for="(s, i) in item.spec.split('/')" :key="i"
-                                                        style="background:#555; padding:2px 6px; border-radius:3px; font-size:11px; color:#333;">
+                                                        style="background:#8cf7ca; padding:2px 6px; border-radius:3px; font-size:11px; color:#333;">
                                                         {{ s }}</div>
                                                 </div>
                                             </div>
@@ -67,7 +67,7 @@
 
                         <!-- 为你推荐 -->
                         <div style="padding:10px 5px;">
-                            <div style="color:#333; font-size:14px; font-weight:bold; margin-bottom:10px;">
+                            <div style="color:#333; font-size:14px; font-weight:bold; margin-bottom:10px;padding-left:5px;">
                                 為你推薦
                             </div>
                             <div class="waterfall-box">
@@ -270,7 +270,7 @@ onMounted(() => {
 .allar-top-a {
     font-size: 15px;
     font-weight: bold;
-    color: #8a6520;
+    color: #000;
     text-align: center;
     width: 100%;
     margin-right: 40px;
@@ -380,8 +380,8 @@ onMounted(() => {
 }
 
 .delete-btn {
-    background: #444;
-    color: #333;
+    background: #0b42f7;
+    color: #fff;
     padding: 3px 12px;
     border-radius: 4px;
     margin-right: 8px;
@@ -389,7 +389,7 @@ onMounted(() => {
 }
 
 .buy-btn {
-    background: #cc9b5a;
+    background: #e3a7ff;
     color: #000;
     padding: 3px 18px;
     border-radius: 4px;

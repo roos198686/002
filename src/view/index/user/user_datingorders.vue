@@ -4,7 +4,7 @@
             <div class="register-all">
                 <!-- 頂部標題 -->
                 <div class="allar-top">
-                    <div @click="goBack" style="margin-left: 10px;cursor: pointer;color: #a88035;width: 30px;">
+                    <div @click="goBack" style="margin-left: 10px;cursor: pointer;color: #000;width: 30px;">
                         <Icon icon="material-symbols:arrow-back-ios-rounded" width="18" />
                     </div>
                     <div class="allar-top-a">訂單列表</div>
@@ -14,18 +14,19 @@
                 <div class="content-wrapper">
                     <div class="cuekdil">
                         <div class="ciurld">
-                            <div class="status-tab" :class="{ active: activeTab === 'all' }" @click="ciurlist('all')">
+                            <div class="status-tab" :class="activeTab === 'all' ? 'active' : ''"
+                                @click="ciurlist('all')">
                                 全部
                             </div>
-                            <div class="status-tab" :class="{ active: activeTab === 'Pending' }"
+                            <div class="status-tab" :class="activeTab === 'Pending'  ? 'active' : ''"
                                 @click="ciurlist('Pending')">
                                 待處理
                             </div>
-                            <div class="status-tab" :class="{ active: activeTab === 'Completed' }"
+                            <div class="status-tab" :class="activeTab === 'Completed'  ? 'active' : ''"
                                 @click="ciurlist('Completed')">
                                 已完成
                             </div>
-                            <div class="status-tab" :class="{ active: activeTab === 'Frozen' }"
+                            <div class="status-tab" :class="activeTab === 'Frozen'  ? 'active' : ''"
                                 @click="ciurlist('Frozen')">
                                 已凍結
                             </div>
@@ -111,7 +112,7 @@
                             </div>
 
                             <div
-                                style="padding:12px;text-align:center;color:#666;font-size:12px;background:#272727;border-top:1px solid #0e0808f1;height:50px;">
+                                style="padding:12px;text-align:center;color:#666;font-size:12px;height:50px;">
                                 <span v-if="loading">載入中</span>
                                 <span v-else-if="showList.length === 0">
                                     <Icon icon="mdi:clipboard-outline" width="38" />
@@ -230,7 +231,7 @@ onMounted(() => {
 .allar-top-a {
     font-size: 15px;
     font-weight: bold;
-    color: #8a6520;
+    color: #000;
     text-align: center;
     width: 100%;
     margin-right: 40px;
@@ -260,7 +261,7 @@ onMounted(() => {
 /* ========== 分頁標籤 ========== */
 .ciurld {
     display: flex;
-    font-size: 13px;
+    font-size: 14px;
     width: 100%;
     margin-top: 5px;
 }
@@ -268,16 +269,32 @@ onMounted(() => {
 .status-tab {
     flex: 1;
     margin-top: 3px;
-    background-color: #f8cc93;
     padding: 10px 0;
     text-align: center;
     color: #000;
     cursor: pointer;
+    position: relative;
+    /* 關鍵：讓after相對於自己定位 */
 }
 
 .status-tab.active {
-    background-color: #f89f2b;
     font-weight: 800;
+    color: #e901c2;
+}
+
+.status-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 3px;
+    background: #f801cf;
+    border-radius: 1px;
+    /* 增加這兩行防止被遮蓋 */
+    z-index: 10;
+    display: block;
 }
 
 .list-scroll-wrap {

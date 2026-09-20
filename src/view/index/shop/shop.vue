@@ -2,13 +2,13 @@
     <div class="main">
         <div class="register-container">
             <div class="register-all">
-                <!-- 頂部 商城/購物車/收貨 切換標籤 -->
+                <!-- 頂部 商城/購物車/收藏 切換標籤 -->
                 <div class="allar-top">
                     <div class="allar-top-a"></div>
                     <div class="allar-top-tabs">
                         <div class="top-tab" :class="{ active: shopTab === 'mall' }" @click="switchShopTab('mall')">商城</div>
                         <div class="top-tab" :class="{ active: shopTab === 'cart' }" @click="switchShopTab('cart')">購物車</div>
-                        <div class="top-tab" :class="{ active: shopTab === 'orders' }" @click="switchShopTab('orders')">收貨</div>
+                        <div class="top-tab" :class="{ active: shopTab === 'collect' }" @click="switchShopTab('collect')">收藏</div>
                     </div>
                 </div>
 
@@ -139,38 +139,79 @@
                         </div>
                         <div v-if="cartLoading" class="tab-loading-tip">載入中.....</div>
                         <div v-if="!cartLoading && cartList.length === 0" class="tab-empty-tip">購物車暫無商品</div>
-                        <div class="tab-bottom-space"></div>
-                      </div>
 
-                      <!-- 收貨（訂單）標籤內容 -->
-                      <div v-if="shopTab === 'orders'" class="tab-order-wrap">
-                        <div class="order-item" v-for="item in orderList" :key="item.order_no">
-                            <div class="order-top-row">
-                                <span class="order-no">訂單編號：{{ item.order_no }}</span>
-                                <span class="order-status"
-                                    :style="item.status == 2 ? 'color:#00b578' : item.status == 3 ? 'color:#cc9b5a' : 'color:#ff33ee'">
-                                    {{ item.status == 2 ? '待出貨' : item.status == 3 ? '待收貨' : '已完成' }}
-                                </span>
-                            </div>
-                            <div class="order-goods-row">
-                                <img :src="baseURL + item.goods_cover" class="cart-img" />
-                                <div class="cart-info">
-                                    <div class="cart-name" @click="toGoodsDetail(item.goods_id)">{{ item.goods_name }}</div>
-                                    <div class="cart-spec" v-if="item.color || item.spec">
-                                        {{ item.color || '' }} {{ item.spec || '' }} ×{{ item.number }}
-                                    </div>
-                                    <div class="cart-price-row">
-                                        <span class="cart-price">$ {{ item.total_price }}</span>
-                                    </div>
-                                    <div class="order-btn-row">
-                                        <span class="order-btn receive-btn" v-if="item.status == 3" @click="receiveOrder(item)">收貨</span>
-                                        <span class="order-btn" v-if="item.status >= 2" @click="toLogistics(item)">查看物流</span>
+                        <!-- 為你推薦 -->
+                        <div class="rec-section">
+                            <div class="rec-title">為你推薦</div>
+                            <div class="rec-waterfall">
+                                <div class="rec-item" v-for="item in recList" :key="item.id" @click="toGoodsDetail(item.id)">
+                                    <div class="rec-card">
+                                        <div class="rec-img-box">
+                                            <img :src="baseURL + item.cover" class="rec-img">
+                                        </div>
+                                        <div class="rec-info">
+                                            <div class="rec-name">{{ item.name }}</div>
+                                            <div class="rec-price-row">
+                                                <span class="rec-price-tag">驚喜價</span>
+                                                <span class="rec-price-symbol">$</span>{{ item.price }}
+                                                <span class="rec-sales">已售：{{ item.sales }}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div v-if="orderLoading" class="tab-loading-tip">載入中.....</div>
-                        <div v-if="!orderLoading && orderList.length === 0" class="tab-empty-tip">暫無訂單</div>
+                        <div class="tab-bottom-space"></div>
+                      </div>
+
+                      <!-- 收藏（收穫商品）標籤內容 -->
+                      <div v-if="shopTab === 'collect'" class="tab-collect-wrap">
+                        <div class="fav-item" v-for="item in favList" :key="item.collect_id || item.id">
+                            <img :src="baseURL + item.cover" class="cart-img fav-img" @click="toGoodsDetail(item.id)" />
+                            <div class="cart-info">
+                                <div class="cart-name" @click="toGoodsDetail(item.id)">{{ item.name }}</div>
+                                <div class="fav-chips" v-if="item.color">
+                                    <span class="fav-chip-label">顏色</span>
+                                    <span class="fav-chip" v-for="(c, i) in item.color.split('/')" :key="'c'+i">{{ c }}</span>
+                                </div>
+                                <div class="fav-chips" v-if="item.spec">
+                                    <span class="fav-chip-label">規格</span>
+                                    <span class="fav-chip" v-for="(s, i) in item.spec.split('/')" :key="'s'+i">{{ s }}</span>
+                                </div>
+                                <div class="fav-time-row">
+                                    <span class="cart-price">$ {{ item.price }}</span>
+                                    <span class="fav-time">收藏時間：{{ formatFavTime(item.collect_time) }}</span>
+                                </div>
+                                <div class="fav-btn-row">
+                                    <span class="fav-buy-btn" @click="toGoodsDetail(item.id)">立即購買</span>
+                                    <span class="fav-del-btn" @click="cancelFav(item)">取消收藏</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-if="favLoading" class="tab-loading-tip">載入中.....</div>
+                        <div v-if="!favLoading && favList.length === 0" class="tab-empty-tip">暫無收藏商品</div>
+
+                        <!-- 為你推薦 -->
+                        <div class="rec-section">
+                            <div class="rec-title">為你推薦</div>
+                            <div class="rec-waterfall">
+                                <div class="rec-item" v-for="item in recList" :key="item.id" @click="toGoodsDetail(item.id)">
+                                    <div class="rec-card">
+                                        <div class="rec-img-box">
+                                            <img :src="baseURL + item.cover" class="rec-img">
+                                        </div>
+                                        <div class="rec-info">
+                                            <div class="rec-name">{{ item.name }}</div>
+                                            <div class="rec-price-row">
+                                                <span class="rec-price-tag">驚喜價</span>
+                                                <span class="rec-price-symbol">$</span>{{ item.price }}
+                                                <span class="rec-sales">已售：{{ item.sales }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="tab-bottom-space"></div>
                       </div>
                     </div>
@@ -360,20 +401,10 @@ const loadMoreData = async () => {
     }
 };
 
-// ==================== 滚动监听（上拉加载） ====================
+// ==================== 滚动监听（上拉加载，僅商城標籤） ====================
 const handleScroll = () => {
     const el = listContainer.value;
     if (!el) return;
-
-    // 收貨標籤：觸底加載更多訂單
-    if (shopTab.value === 'orders') {
-        if (orderLoading.value || orderFinished.value) return;
-        if (el.scrollTop + el.clientHeight >= el.scrollHeight - 80) {
-            getOrderList();
-        }
-        return;
-    }
-    // 僅商城標籤分頁加載
     if (shopTab.value !== 'mall') return;
     if (loading.value || finished.value || isRefreshing.value) return;
 
@@ -470,8 +501,8 @@ const scrollPause = () => {
     }
 }
 
-// ==================== 頂部標籤切換（商城/購物車/收貨） ====================
-const shopTab = ref<'mall' | 'cart' | 'orders'>('mall');
+// ==================== 頂部標籤切換（商城/購物車/收藏） ====================
+const shopTab = ref<'mall' | 'cart' | 'collect'>('mall');
 
 // ---- 購物車 ----
 const cartList = ref<any[]>([]);
@@ -512,70 +543,58 @@ const goCartPage = () => {
     router.push('/cart');
 };
 
-// ---- 收貨（訂單） ----
-const orderList = ref<any[]>([]);
-const orderLoading = ref(false);
-const orderFinished = ref(false);
-const orderPage = ref(1);
-const getOrderList = async () => {
+// ---- 收藏（收穫商品，同 collect 頁接口） ----
+const favList = ref<any[]>([]);
+const favLoading = ref(false);
+const getFavList = async () => {
     const user = getUser();
     if (!user || !user.id) return;
-    if (orderLoading.value || orderFinished.value) return;
-    orderLoading.value = true;
+    favLoading.value = true;
     try {
-        const { data } = await request.get('/api/orders/list', {
-            params: { user_id: user.id, status: '', page: orderPage.value, limit: 10 }
-        });
-        if (data.code === 1) {
-            const list = data.data || [];
-            if (orderPage.value === 1) orderList.value = [];
-            orderList.value.push(...list);
-            if (list.length < 10) orderFinished.value = true;
-            else orderPage.value++;
-        }
-    } catch (err) { } finally { orderLoading.value = false; }
+        const { data } = await request.get('/api/collect/list', { params: { user_id: user.id } });
+        if (data.code === 1) favList.value = data.data || [];
+    } catch (err) { } finally { favLoading.value = false; }
 };
-// 簽收
-const receiveOrder = async (item: any) => {
+const cancelFav = async (item: any) => {
     try {
-        const res = await request.post('/api/orderLogistics/save', {
-            id: item.id,
-            order_no: item.order_no,
-            express_company: '',
-            express_no: '',
-            status: '已簽收',
-            content: '用戶已簽收'
-        });
-        if (res.data.code === 1) {
-            orderPage.value = 1;
-            orderFinished.value = false;
-            orderList.value = [];
-            getOrderList();
-        }
+        await request.post('/api/collect/delete', { id: item.collect_id });
+        getFavList();
     } catch (err) { }
 };
-const toLogistics = (item: any) => {
-    router.push({ path: '/logistics', query: { order_no: item.order_no } });
+const formatFavTime = (timeStr: string) => {
+    if (!timeStr) return '';
+    const date = new Date(timeStr);
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
 };
+
+// ---- 為你推薦（購物車/收藏標籤下方展示，同原購物車頁） ----
+const recList = ref<any[]>([]);
+const loadRecGoods = async () => {
+    try {
+        const { data } = await request.post('/api/shop/list', { page: 1, limit: 20, keyword: '' });
+        if (data.code === 1) recList.value = data.data || [];
+    } catch (err) { }
+};
+
 const toGoodsDetail = (id: any) => {
     router.push({ path: '/goods-detail', query: { id: String(id) } });
 };
 
-const switchShopTab = (tab: 'mall' | 'cart' | 'orders') => {
+const switchShopTab = (tab: 'mall' | 'cart' | 'collect') => {
     if (shopTab.value === tab) return;
     shopTab.value = tab;
     if (tab === 'cart') getCartList();
-    if (tab === 'orders' && orderList.value.length === 0) {
-        orderPage.value = 1;
-        orderFinished.value = false;
-        getOrderList();
-    }
+    if (tab === 'collect') getFavList();
 };
 
 // 页面挂载'
 onMounted(async () => {
     loadRefreshDatatop()
     getTopViewGoods()
+    loadRecGoods()
     await nextTick();
     const cache = localStorage.getItem(CACHE_KEY);
     if (cache) {
@@ -647,8 +666,6 @@ onUnmounted(() => {
 .allar-top-tabs {
     flex: 1;
     display: flex;
-    align-items: center;
-    justify-content: center;
     gap: 26px;
     margin-right: 30px;
 }
@@ -678,9 +695,8 @@ onUnmounted(() => {
     border-radius: 2px;
 }
 
-/* 購物車/訂單 標籤內容 */
-.tab-cart-wrap,
-.tab-order-wrap {
+/* 購物車標籤內容 */
+.tab-cart-wrap {
     padding-top: 10px;
 }
 
@@ -692,8 +708,7 @@ onUnmounted(() => {
     box-shadow: 0 0 3px 1px rgb(223, 223, 223);
 }
 
-.cart-goods,
-.order-goods-row {
+.cart-goods {
     display: flex;
 }
 
@@ -779,57 +794,170 @@ onUnmounted(() => {
     cursor: pointer;
 }
 
-/* 訂單條目 */
-.order-item {
-    background: #f7f7f7;
+/* 收藏（收穫商品）條目 */
+.tab-collect-wrap {
+    padding-top: 10px;
+}
+
+.fav-item {
+    display: flex;
+    align-items: flex-start;
+    background: #f0f0f0;
     border-radius: 8px;
     padding: 12px;
     margin-bottom: 10px;
     box-shadow: 0 0 3px 1px rgb(223, 223, 223);
 }
 
-.order-top-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #666;
-    font-size: 12px;
-    margin-bottom: 8px;
-    gap: 10px;
+.fav-img {
+    cursor: pointer;
 }
 
-.order-no {
-    overflow: hidden;
-    text-overflow: ellipsis;
+.fav-chips {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 4px;
+}
+
+.fav-chip-label {
+    color: #333;
+    font-size: 11px;
+}
+
+.fav-chip {
+    background: #8cf7ca;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    color: #333;
+}
+
+.fav-time-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.fav-time {
+    font-size: 11px;
+    color: #666;
     white-space: nowrap;
 }
 
-.order-status {
-    flex-shrink: 0;
-    font-weight: bold;
-}
-
-.order-btn-row {
+.fav-btn-row {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
     margin-top: 6px;
 }
 
-.order-btn {
-    background: #fff;
-    border: 1px solid #acb2ca;
-    color: #333;
+.fav-buy-btn {
+    background: #e3a7ff;
+    color: #000;
+    font-weight: bold;
+    font-size: 13px;
+    padding: 3px 18px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.fav-del-btn {
+    background: #0b42f7;
+    color: #fff;
     font-size: 13px;
     padding: 3px 12px;
     border-radius: 5px;
     cursor: pointer;
 }
 
-.receive-btn {
-    background: #ff33ee;
-    border-color: #ff33ee;
-    color: #fff;
+/* 為你推薦（購物車/收藏標籤下方） */
+.rec-section {
+    padding: 10px 0;
+}
+
+.rec-title {
+    color: #333;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    padding-left: 5px;
+}
+
+.rec-waterfall {
+    width: 100%;
+    column-count: 2;
+    column-gap: 8px;
+}
+
+.rec-item {
+    break-inside: avoid;
+    padding: 4px 0;
+    cursor: pointer;
+}
+
+.rec-card {
+    background: #e8e8e8;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.rec-img-box {
+    width: 100%;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.rec-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    max-height: 270px;
+}
+
+.rec-info {
+    padding: 5px 8px 10px 8px;
+    text-align: left;
+}
+
+.rec-name {
+    color: #333;
+    font-size: 13px;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.rec-price-row {
+    color: #ff33ee;
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 4px;
+}
+
+.rec-price-tag {
+    font-size: 11px;
+    color: #333;
+    font-weight: normal;
+    margin-right: 4px;
+}
+
+.rec-price-symbol {
+    font-size: 11px;
+}
+
+.rec-sales {
+    font-size: 11px;
+    color: #666;
+    font-weight: normal;
+    margin-left: 6px;
 }
 
 .tab-loading-tip {

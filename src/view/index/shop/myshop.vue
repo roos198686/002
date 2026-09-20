@@ -722,10 +722,10 @@ onUnmounted(() => {
 /* 列表標題 */
 .list-title {
     font-size: 14px;
-    color: #8a6a30;
+    color: #111;
     padding-left: 5px;
     border-radius: 20px 20px 0 0;
-    padding: 10px 0;
+    padding: 10px 20px;
     z-index: 99999;
 
 }

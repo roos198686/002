@@ -4,7 +4,7 @@
             <div class="register-all">
                 <!-- 顶部 -->
                 <div class="allar-top">
-                    <div @click="goBack" style="margin-left:10px;cursor:pointer;color:#a88035;width:30px;">
+                    <div @click="goBack" style="margin-left:10px;cursor:pointer;color:#000;width:30px;">
                         <Icon icon="material-symbols:arrow-back-ios-rounded" width="18" />
                     </div>
                     <div class="allar-top-a">收貨地址</div>
@@ -17,12 +17,12 @@
                         <!-- 地址列表 -->
                         <div class="address-item" v-for="item in addressList" :key="item.id">
                             <div style="display:flex;gap:5px;margin-bottom: 5px;">
-                                <div style="background-color: #cc9b5a;padding: 0 3px;border-radius: 5px; color:#000;font-size:11px;cursor:pointer;"
+                                <div style="background-color: #cc9b5a;padding: 3px 5px;border-radius: 5px; color:#000;font-size:13px;cursor:pointer;"
                                     @click="editAddress(item)">編輯</div>
-                                <div style="background-color: #fc0202;padding: 0 3px;border-radius: 5px; color:#333;font-size:11px;cursor:pointer;"
+                                <div style="background-color: #fc0202;padding: 3px 5px;border-radius: 5px; color:#fff;font-size:13px;cursor:pointer;"
                                     @click="delAddress(item.id)">刪除</div>
                                 <div v-if="item.is_default"
-                                    style="background-color: #02fc17;padding: 0 3px;border-radius: 5px; color:#000;font-size:11px;margin-left:auto;text-align: right;">
+                                    style="background-color: #02fc17;padding: 3px 5px;border-radius: 5px; color:#000;font-size:13px;margin-left:auto;text-align: right;">
                                     預設
                                 </div>
                             </div>
@@ -58,8 +58,8 @@
                         </div>
 
                         <!-- 推荐商品 -->
-                        <div style="margin-top:30px;padding-top:10px;border-top:1px solid #333;">
-                            <div style="color:#333; font-size:14px; font-weight:bold; margin-bottom:10px;">
+                        <div style="margin-top:30px;padding-top:10px;">
+                            <div style="color:#333; font-size:14px; font-weight:bold; margin-bottom:10px;padding-left:5px;">
                                 為你推薦
                             </div>
                             <div class="waterfall-box">
@@ -97,13 +97,13 @@
         <div class="buy-popup-mask" v-show="showAddressPopup"></div>
         <div class="buy-popup" :class="{ show: showAddressPopup }">
             <div style="margin: 0 auto;max-width: 500px;background: #fff;border-radius: 20px 20px 0 0;height: 100%;">
-                <div style="padding: 20px;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div style="padding: 0px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;background: #e5bafd;border-radius: 15px 15px 0 0;padding: 5px 20px;">
                         <div style="font-weight:bold;font-size:15px;">{{ editId ? '編輯地址' : '新增地址' }}</div>
                         <div class="close" @click="closeAddressPopup">×</div>
                     </div>
 
-                    <div style="padding:10px 0;text-align: left;">
+                    <div style="text-align: left;padding: 20px;">
                         <div style="font-size:12px;color:#666;margin-bottom:4px;">國家/地區</div>
                         <input v-model="form.country" placeholder="請輸入國家/地區" class="input" />
 
@@ -124,8 +124,9 @@
                             <label for="d" style="font-size:12px;margin-left:6px;">設為預設地址</label>
                         </div>
                     </div>
-
+                    <div style="padding: 0 20px;">
                     <div class="popup-submit" @click="saveAddress">儲存地址</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -325,7 +326,7 @@ onMounted(async () => {
     bottom: 0;
     width: 100%;
     height: 100%;
-    background: #fff;
+    background: #f0f0f0;
     overflow: hidden;
 }
 
@@ -367,7 +368,7 @@ onMounted(async () => {
 .allar-top-a {
     font-size: 15px;
     font-weight: bold;
-    color: #8a6520;
+    color: #000;
     text-align: center;
     width: 100%;
     margin-right: 40px;
@@ -385,7 +386,7 @@ onMounted(async () => {
 
 /* 地址：*/
 .address-item {
-    background: #fff;
+    /* background: #fff; */
     border-radius: 8px;
     padding: 14px;
     margin-bottom: 10px;
@@ -404,8 +405,8 @@ onMounted(async () => {
 }
 
 .add-btn {
-    background: #cc9b5a;
-    color: #000;
+    background: #0155d3;
+    color: #fff;
     text-align: center;
     padding: 7px 0;
     border-radius: 8px;
@@ -439,6 +440,7 @@ onMounted(async () => {
     width: 100vw;
     height: 100vh;
     z-index: 9999;
+    background-color: #00000060;
 }
 
 .buy-popup {
@@ -465,8 +467,8 @@ onMounted(async () => {
 
 .popup-submit {
     /* height: 38px; */
-    background: #cc9b5a;
-    color: #000;
+    background: #c702ad;
+    color: #fff;
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -474,7 +476,7 @@ onMounted(async () => {
     font-weight: bold;
     margin-top: 20px;
     font-size: 13px;
-    padding: 7px 0;
+    padding: 7px;
 }
 
 .copy-toast {
