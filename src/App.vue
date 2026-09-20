@@ -1,10 +1,14 @@
 <template>
-  <router-view />
+  <router-view v-slot="{ Component }">
+    <transition :name="transitionName">
+      <component :is="Component" :key="route.fullPath" />
+    </transition>
+  </router-view>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { Capacitor } from '@capacitor/core'
 import request from '@/utils/request'
 
@@ -26,8 +30,37 @@ const refreshGlobalUnread = () => {
     })
 }
 
-// iOS 邊緣右滑返回上一頁（SPA 下 WKWebView 原生手勢不可靠，改用 JS 手勢）
 const router = useRouter()
+const route = useRoute()
+
+// ========== 路由切換過渡動畫（右滑返回 = slide-back，前進 = slide-forward） ==========
+const transitionName = ref('slide-forward')
+let currentPos = 0
+let fromPos = 0
+let isPop = false
+
+// popstate（後退/前進）觸發時 history.state 已是目標頁
+const onPopState = () => { isPop = true }
+
+const removeBeforeEach = router.beforeEach(() => {
+  const pos = (window.history.state && (window.history.state as any).position) || 0
+  if (isPop) {
+    // 後退/前進：用上次記錄的位置作為來源頁
+    fromPos = currentPos
+    isPop = false
+  } else {
+    // push/replace：此時 state 仍是來源頁
+    fromPos = pos
+  }
+})
+
+const removeAfterEach = router.afterEach(() => {
+  const toPos = (window.history.state && (window.history.state as any).position) || 0
+  transitionName.value = toPos < fromPos ? 'slide-back' : 'slide-forward'
+  currentPos = toPos
+})
+
+// iOS 邊緣右滑返回上一頁（SPA 下 WKWebView 原生手勢不可靠，改用 JS 手勢）
 let edgeTouchX = 0
 let edgeTouchY = 0
 let edgeSwiped = false
@@ -60,6 +93,8 @@ onMounted(() => {
   window.addEventListener('messageRead', refreshGlobalUnread)
   window.addEventListener('touchstart', onEdgeTouchStart, { passive: true })
   window.addEventListener('touchmove', onEdgeTouchMove, { passive: true })
+  window.addEventListener('popstate', onPopState, { passive: true })
+  currentPos = (window.history.state && (window.history.state as any).position) || 0
   refreshGlobalUnread()
 })
 
@@ -68,5 +103,8 @@ onUnmounted(() => {
   window.removeEventListener('messageRead', refreshGlobalUnread)
   window.removeEventListener('touchstart', onEdgeTouchStart)
   window.removeEventListener('touchmove', onEdgeTouchMove)
+  window.removeEventListener('popstate', onPopState)
+  removeBeforeEach()
+  removeAfterEach()
 })
 </script>

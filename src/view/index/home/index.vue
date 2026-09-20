@@ -2,10 +2,13 @@
     <div class="main">
         <div class="register-container">
             <div class="register-all">
-                <!-- 移除顶部标签�?-->
+                <!-- 頂部 推薦/收藏 切換標籤-->
                 <div class="allar-top">
                     <div class="allar-top-a"></div>
-                    <div class="allar-top-r">推薦</div>
+                    <div class="allar-top-tabs">
+                        <div class="top-tab" :class="{ active: activeTab === 0 }" @click="switchTab(0)">推薦</div>
+                        <div class="top-tab" :class="{ active: activeTab === 1 }" @click="switchTab(1)">收藏</div>
+                    </div>
                 </div>
 
                 <!-- 内容区域 -->
@@ -117,6 +120,9 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- 收藏空狀態 -->
+                            <div v-if="activeTab === 1 && !loading && dynamicList.length === 0"
+                                class="empty-collect-tip">暫無收藏</div>
                             <div v-if="loading && !finished" class="loading-tip">
                                 <Icon icon="svg-spinners:12-dots-scale-rotate" width="38" />
                             </div>
@@ -210,6 +216,7 @@ import router from '../../../router';
 import request from '@/utils/request';
 import moment from 'moment';
 import { useDynamicStore } from '@/stores/dynamic'
+import { getCollectList, addCollectSnapshot, removeCollectSnapshot } from '@/utils/collectStore';
 const dynamicStore = useDynamicStore()
 const baseURL = request.defaults.baseURL || '';
 // 圖片載入失敗兜底�?
@@ -218,20 +225,38 @@ const defaultImg = `${baseURL}/static/default.png`;
 // ========== 本地缓存常量 & 工具方法 ==========
 const CACHE_KEY = 'tab_all_cache';
 
-// 初始化缓存结构：3个标签独立数据设置
+// 初始化缓存结构：2个标签独立数据（0推薦 1收藏）
 const initCache = () => [
+    { list: [] as any[], page: 1, finished: false, scrollTop: 0, loaded: false },
     { list: [] as any[], page: 1, finished: false, scrollTop: 0, loaded: false },
 ];
 
-// 读取本地缓存
+// 读取本地缓存（兼容旧的单标签数据）
 const getCache = () => {
-    const str = localStorage.getItem(CACHE_KEY);
-    if (!str) return initCache();
+    let cache: any[];
     try {
-        return JSON.parse(str);
+        const str = localStorage.getItem(CACHE_KEY);
+        cache = str ? JSON.parse(str) : initCache();
     } catch {
-        return initCache();
+        cache = initCache();
     }
+    if (!Array.isArray(cache)) cache = initCache();
+    while (cache.length < 2) cache.push({ list: [], page: 1, finished: false, scrollTop: 0, loaded: false });
+    return cache;
+};
+
+// ========== 收藏動態本地快照（收藏列表數據源） ==========
+// 用 Pinia 最新狀態同步單條動態
+const syncItemFromStore = (item: any) => {
+    const storeItem = dynamicStore.getDynamicById(item.dynamic_id);
+    return storeItem ? {
+        ...item,
+        isLike: storeItem.isLike,
+        like_num: storeItem.like_num,
+        isCollect: storeItem.isCollect,
+        collect_num: storeItem.collect_num,
+        comment_num: storeItem.comment_num
+    } : item;
 };
 // 【新增】跳转到发布页面'
 const goToPublish = () => {
@@ -528,6 +553,26 @@ const getUserDetail = async (isRefresh = false) => {
     const tabCache = getCache();
     const cache = tabCache[currTab];
 
+    // 收藏標籤：從本地快照讀取，不走網絡
+    if (currTab === 1) {
+        if (isRefresh) {
+            cache.list = [];
+            cache.page = 1;
+        }
+        cache.list = getCollectList().map(syncItemFromStore);
+        cache.finished = true;
+        cache.loaded = true;
+        setCache(tabCache);
+        dynamicStore.setDynamicList(cache.list);
+        dynamicList.value = cache.list;
+        finished.value = true;
+        page.value = 1;
+        loading.value = false;
+        isRefreshing.value = false;
+        pullDistance.value = 0;
+        return;
+    }
+
     // 下拉刷新：重置当前标�?
     if (isRefresh) {
         cache.page = 1;
@@ -766,6 +811,20 @@ const toggleCollect = async (item: any) => {
             }
             setCache(tabCache);
 
+            // 同步收藏快照（收藏標籤數據源）
+            if (newCollect) {
+                addCollectSnapshot(item);
+            } else {
+                removeCollectSnapshot(item.dynamic_id);
+                // 收藏標籤內取消收藏：從當前列表移除
+                if (currTab === 1) {
+                    tabCache[1].list = tabCache[1].list.filter((c: any) => c.dynamic_id !== item.dynamic_id);
+                    setCache(tabCache);
+                    dynamicList.value = tabCache[1].list;
+                    dynamicStore.setDynamicList(dynamicList.value);
+                }
+            }
+
         } else {
             item.isCollect = oldIsCollect;
             item.collect_num = oldCollectNum;
@@ -995,6 +1054,49 @@ onUnmounted(() => {
     flex-direction: column;
     align-items: center;
     overflow: hidden;
+}
+
+/* 頂部 推薦/收藏 切換標籤 */
+.allar-top-tabs {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 38px;
+    margin-right: 30px;
+}
+
+.top-tab {
+    font-size: 17px;
+    font-weight: bold;
+    color: #333;
+    position: relative;
+    padding: 4px 2px;
+    cursor: pointer;
+}
+
+.top-tab.active {
+    color: #ff33ee;
+}
+
+.top-tab.active::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -2px;
+    width: 22px;
+    height: 3px;
+    background: #ff33ee;
+    border-radius: 2px;
+}
+
+/* 收藏空狀態 */
+.empty-collect-tip {
+    color: #777;
+    text-align: center;
+    padding: 80px 0;
+    font-size: 14px;
 }
 
 

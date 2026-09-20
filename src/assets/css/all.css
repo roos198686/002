@@ -56,6 +56,34 @@
   color: #fff;
   font-size: 15px;
 }
+/* 路由切換過渡（前進滑入 / 右滑返回舊頁滑出） */
+.slide-forward-enter-active,
+.slide-forward-leave-active,
+.slide-back-enter-active,
+.slide-back-leave-active {
+  transition: transform 0.28s ease, opacity 0.28s ease;
+}
+.slide-forward-enter-active {
+  z-index: 1100;
+}
+.slide-forward-enter-from {
+  transform: translateX(100%);
+}
+.slide-forward-leave-to {
+  transform: translateX(-25%);
+  opacity: 0.6;
+}
+.slide-back-leave-active {
+  z-index: 1100;
+}
+.slide-back-leave-to {
+  transform: translateX(100%);
+}
+.slide-back-enter-from {
+  transform: translateX(-25%);
+  opacity: 0.6;
+}
+
 /* 顶部导航栏 */
 .register-all {
     width: 100%;
