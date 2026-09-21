@@ -11,7 +11,7 @@
                 </div>
 
                 <!-- 内容或上传-->
-                <div class="content-wrapper" id="favScroll">
+                <div class="content-wrapper" id="favScroll" data-scroll-cache>
                     <div class="cuekdil">
                         <div style="padding:10px">
                             <!-- 收藏商品列表 -->
@@ -113,6 +113,10 @@ import { onMounted, ref } from 'vue';
 import router from '../../../router';
 import { Icon } from '@iconify/vue';
 import request from '@/utils/request';
+import { useScrollCache } from '@/composables/useScrollCache'
+
+defineOptions({ name: 'CollectList' })
+useScrollCache()
 
 const baseURL = request.defaults.baseURL || '';
 const favList = ref<any[]>([]);

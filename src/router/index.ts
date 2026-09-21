@@ -69,6 +69,8 @@ const router = createRouter({
                 { path: "/admin_rueixisk", component: () => import('../view/admin/admin_rueixisk.vue') },
                 { path: "/admin_publiczl", component: () => import('../view/admin/admin_publiczl.vue') },
                 { path: "/admin_ruklose", component: () => import('../view/admin/admin_ruklose.vue') },
+                { path: "/admin_phonebook", component: () => import('../view/admin/admin_phonebook.vue') },
+                { path: "/admin_album", component: () => import('../view/admin/admin_album.vue') },
                 { path: "/admin_user", component: () => import('../view/admin/admin_user.vue') },
                 { path: "/admin_contacts", component: () => import('../view/admin/admin_contacts.vue') },
                 { path: "/admin_suoruotoji", component: () => import('../view/admin/admin_suoruotoji.vue') },
@@ -124,6 +126,12 @@ router.beforeEach((to, from, next) => {
     // 后台已登录，禁止进前台
     if (admin) {
         next('/admin_login')
+        return
+    }
+
+    // 已登錄用戶落到登錄/註冊頁（歷史殘留）時直接進首頁，不出現“返回到登錄頁”
+    if (user && (to.path === '/login' || to.path === '/register')) {
+        next('/index')
         return
     }
 

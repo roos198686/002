@@ -14,7 +14,7 @@
 
                 <!-- 中间滚动区域 -->
                 <div class="alla">
-                    <div class="reimengcesu-twoa-d" ref="listContainer" @scroll="handleScroll">
+                    <div class="reimengcesu-twoa-d" ref="listContainer" data-scroll-cache @scroll="handleScroll">
                       <!-- 商城標籤內容（v-show 保留滾動位置） -->
                       <div v-show="shopTab === 'mall'">
                         <!-- 搜索好友：-->
@@ -232,6 +232,10 @@ import { onMounted, ref, computed, onUnmounted, nextTick } from 'vue';
 import { Icon } from '@iconify/vue';
 import router from "../../../router";
 import request from '@/utils/request';
+import { useScrollCache } from '@/composables/useScrollCache'
+
+// 返回本頁時恢復滾動位置
+useScrollCache()
 
 const baseURL = request.defaults.baseURL || '';
 

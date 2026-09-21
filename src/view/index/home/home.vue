@@ -52,6 +52,8 @@ import {
 import PermissionGate from '@/components/PermissionGate.vue'
 import { io } from 'socket.io-client'
 
+defineOptions({ name: 'Home' })
+
 const route = useRoute()
 let socket: any = null
 const baseURL = request.defaults.baseURL || ''

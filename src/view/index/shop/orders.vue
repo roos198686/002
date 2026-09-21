@@ -19,7 +19,8 @@
                 </div>
 
                 <!-- 内容或上传-->
-                <div class="content-wrapper" style="top: calc(75px + env(safe-area-inset-top));" id="orderScroll">
+                <div class="content-wrapper" style="top: calc(75px + env(safe-area-inset-top));" id="orderScroll"
+                    data-scroll-cache>
                     <div class="cuekdil">
                         <div class="order-list">
                             <div class="order-item" v-for="item in orderList" :key="item.order_no">
@@ -119,6 +120,10 @@ import { useRoute } from 'vue-router';
 import router from '../../../router';
 import { Icon } from '@iconify/vue';
 import request from '@/utils/request';
+import { useScrollCache } from '@/composables/useScrollCache'
+
+defineOptions({ name: 'OrdersList' })
+useScrollCache()
 
 const baseURL = request.defaults.baseURL || ''
 const route = useRoute();

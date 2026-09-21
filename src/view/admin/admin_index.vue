@@ -39,28 +39,28 @@
                         <div style="padding: 30px;display: flex;flex-direction: row;gap: 10px;">
                             <div
                                 style="background-color: #b2ecf7;border-radius: 6px;padding: 15px 20px;flex: 1;border: 1px solid #999898;">
-                                <div style=" font-size: 50px;font-weight: bold;text-align: center;color: #a3329e;">
+                                <div style=" font-size: 50px;font-weight: bold;text-align: center;color: #ff33ee;">
                                     {{ statistics.count_level_2 || 0 }}
                                 </div>
                                 <div>入驻用户数</div>
                             </div>
                             <div
                                 style="background-color: #b2ecf7;border-radius: 6px;padding: 15px 20px;flex: 1; border: 1px solid #999898;">
-                                <div style=" font-size: 50px;font-weight: bold; text-align: center;color: #a3329e; ">
+                                <div style=" font-size: 50px;font-weight: bold; text-align: center;color: #ff33ee; ">
                                     {{ statistics.count_level_1 || 0 }}
                                 </div>
                                 <div>客户数</div>
                             </div>
                             <div
                                 style="background-color: #b2ecf7;border-radius: 6px;padding: 15px 20px; flex: 1;border: 1px solid #999898; ">
-                                <div style=" font-size: 50px; font-weight: bold; text-align: center; color: #a3329e; ">
+                                <div style=" font-size: 50px; font-weight: bold; text-align: center; color: #ff33ee; ">
                                     {{ statistics.amount_rya || '0.00' }}
                                 </div>
                                 <div>总充值金额</div>
                             </div>
                             <div
                                 style=" background-color: #b2ecf7; border-radius: 6px; padding: 15px 20px;flex: 1;border: 1px solid #999898;">
-                                <div style=" font-size: 50px; font-weight: bold;text-align: center;color: #a3329e;">
+                                <div style=" font-size: 50px; font-weight: bold;text-align: center;color: #ff33ee;">
                                     {{ statistics.amount_ryb || '0.00' }}
                                 </div>
                                 <div>总提现金额</div>
@@ -71,68 +71,54 @@
                             <div style="width: 100%;">
                                 <div
                                     style=" display: flex; justify-content: space-between; align-items: center;margin-bottom: 15px; ">
-                                    <div style=" font-size: 15px; font-weight: bold;color: #a3329e;">
+                                    <div style=" font-size: 15px; font-weight: bold;color: #ff33ee;">
                                         钱包列表
                                     </div>
-                                    <button @click="showAddModal = true" v-if="userInfo.status != 3"
-                                        style="font-size: 13px; padding: 3px 12px;background-color: #a3329e; color:#333; border: none;border-radius: 4px; cursor: pointer;">
+                                    <el-button type="primary" size="small" @click="showAddModal = true"
+                                        v-if="userInfo.status != 3">
                                         + 添加钱包地址
-                                    </button>
+                                    </el-button>
                                 </div>
 
-                                <div v-if="loading" style="text-align: center; padding: 20px">
-                                    加载中.....
-                                </div>
-
-                                <div v-else style="border: 1px solid #ddd; border-radius: 8px; overflow: hidden; ">
-                                    <table style=" width: 100%; border-collapse: collapse; text-align: center;">
-                                        <thead>
-                                            <tr
-                                                style="background-color: #fdf6fd; height: 35px;font-weight: bold; font-size: 14px; ">
-                                                <td>币种类型</td>
-                                                <td>钱包地址</td>
-                                                <td>当前状态</td>
-                                                <td>已完成提现笔数</td>
-                                                <td>总充值金额</td>
-                                                <td>操作</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr v-for="item in walletList" :key="item.id"
-                                                style="height: 35px; border-top: 1px solid #eee;font-size: 13px;">
-                                                <td>{{ item.coin_type }}</td>
-                                                <td style="font-family: monospace">{{ item.address }}</td>
-                                                <td>
-                                                    <span :style="{ color: item.status == 1 ? '#00b42a' : '#ff4d4f' }">
-                                                        {{ item.status == 1 ? "启用" : "停用" }}
-                                                    </span>
-                                                </td>
-                                                <td>{{ item.withdrawCount || 0 }}</td>
-                                                <td style="color:#a33299; font-weight:bold">
-                                                    {{ item.totalRecharge ? Number(item.totalRecharge).toFixed(2) :
-                                                        '0.00'
-                                                    }}
-                                                </td>
-                                                <td>
-                                                    <span :style="userinfo.status != 3 ? '' : 'pointer-events: none;background-color: #555;'">
-                                                    <button @click="handleChangeStatus(item)" "
-                                                        :style="{ padding: '2px 10px', border: 'none', borderradius: '4px', cursor: 'pointer', color: '#fff', backgroundcolor: item.status == 1 ? '#ff4d4f' : '#00b42a' }">
-                                                        {{ item.status == 1 ? "停用" : "启用" }}
-                                                    </button>
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            <tr
-                                                style="height: 38px; border-top: 2px solid #a3329e; font-weight: bold; font-size: 14px; background: #fdf6fd;">
-                                                <td>总计</td>
-                                                <td>-</td>
-                                                <td>-</td>
-                                                <td style="color:#000;">{{ totalWithdrawCount }}</td>
-                                                <td style="color:#a3329e;">{{ totalRechargeAmount }}</td>
-                                                <td>-</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                <el-table :data="walletList" v-loading="loading" border stripe class="wallet-table">
+                                    <el-table-column prop="coin_type" label="币种类型" align="center" />
+                                    <el-table-column prop="address" label="钱包地址" align="center"
+                                        show-overflow-tooltip>
+                                        <template #default="{ row }">
+                                            <span style="font-family: monospace">{{ row.address }}</span>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column label="当前状态" align="center">
+                                        <template #default="{ row }">
+                                            <el-tag :type="row.status == 1 ? 'success' : 'danger'">
+                                                {{ row.status == 1 ? '启用' : '停用' }}
+                                            </el-tag>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column label="已完成提现笔数" align="center">
+                                        <template #default="{ row }">{{ row.withdrawCount || 0 }}</template>
+                                    </el-table-column>
+                                    <el-table-column label="总充值金额" align="center">
+                                        <template #default="{ row }" class="amount-cell">
+                                            <span style="color:#ff33ee;font-weight:bold">
+                                                {{ row.totalRecharge ? Number(row.totalRecharge).toFixed(2) : '0.00' }}
+                                            </span>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column label="操作" align="center">
+                                        <template #default="{ row }">
+                                            <el-button size="small"
+                                                :type="row.status == 1 ? 'danger' : 'primary'"
+                                                :disabled="userInfo.status == 3"
+                                                @click="handleChangeStatus(row)">
+                                                {{ row.status == 1 ? '停用' : '启用' }}
+                                            </el-button>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                                <div class="wallet-total">
+                                    总计：提现笔数 {{ totalWithdrawCount }} 笔　|　总充值
+                                    {{ totalRechargeAmount }}
                                 </div>
                             </div>
                         </div>
@@ -148,7 +134,7 @@
         <div class="buttnone">
             <div class="buttnone-all">
                 <div v-for="menu in menuList" :key="menu.key" class="buttnone-alla"
-                    :style="{ color: ismenuactive(menu.key) ? '#ac00ac' : '#000' }" @click="activeMenu(menu.path)">
+                    :style="{ color: isMenuActive(menu.key) ? '#ff33ee' : '#000' }" @click="activeMenu(menu.path)">
                     <Icon :icon="menu.icon" height="30" />
                     <div>{{ menu.mobileName }}</div>
                 </div>
@@ -192,7 +178,7 @@
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 20px;
-            color: #a3329e;
+            color: #ff33ee;
             text-align: center;
           ">
                     添加钱包地址
@@ -234,7 +220,7 @@
                     </button>
                     <button @click="handleAddWallet" :disabled="addLoading" style="
               padding: 8px 20px;
-              background: #a3329e;
+              background: #ff33ee;
               color:#333;
               border: none;
               border-radius: 6px;
@@ -254,6 +240,7 @@ import { Icon } from "@iconify/vue";
 import router from "../../router";
 import { useRoute } from "vue-router";
 import request from '@/utils/request'
+import './admin-common.css'
 const route = useRoute();
 const invitedadd = ref(false);
 
@@ -325,6 +312,22 @@ const menuList = ref([
         namea: "贴子管理",
         mobileName: "贴子管理",
         icon: "material-symbols:article-rounded",
+    },
+    {
+        key: "k",
+        path: "/admin_phonebook",
+        pathPrefix: "/admin_phonebook",
+        namea: "通讯录",
+        mobileName: "通讯录",
+        icon: "material-symbols:contact-page-rounded",
+    },
+    {
+        key: "l",
+        path: "/admin_album",
+        pathPrefix: "/admin_album",
+        namea: "相册",
+        mobileName: "相册",
+        icon: "material-symbols:photo-library-outline-rounded",
     },
     {
         key: "e",
@@ -568,7 +571,7 @@ onMounted(() => {
     display: none;
     font-size: 24px;
     cursor: pointer;
-    color: #a3329e;
+    color: #ff33ee;
     margin-right: 10px;
 }
 
@@ -576,7 +579,7 @@ onMounted(() => {
     margin: 0 15px;
     font-size: 18px;
     font-weight: bold;
-    color: #a3329e;
+    color: #ff33ee;
     width: 100%;
 }
 
@@ -605,7 +608,7 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     width: 80px;
-    background-color: #a3329e;
+    background-color: #ff33ee;
 }
 
 .allal-top-b {
@@ -630,14 +633,14 @@ onMounted(() => {
 }
 
 .allal-top-ba:hover {
-    background-color: #e64dde;
+    background-color: #ff5ff1;
     color: #333;
 }
 
 .allal-top-babutt {
     width: 100%;
     height: 60px;
-    background-color: #a3329e;
+    background-color: #ff33ee;
     cursor: pointer;
     font-size: 13px;
     color: #333;
@@ -663,10 +666,27 @@ onMounted(() => {
     flex: 1;
 }
 
+.wallet-table {
+    width: 100%;
+}
+
+:deep(.wallet-table th.el-table__cell) {
+    background: #fdf2fe;
+    color: #333;
+}
+
+.wallet-total {
+    margin-top: 10px;
+    text-align: right;
+    font-size: 14px;
+    font-weight: bold;
+    color: #ff33ee;
+}
+
 .lksfokof-all-texta {
     font-size: 22px;
     font-weight: bold;
-    color: #9e026a;
+    color: #ff33ee;
 }
 
 .lksfokof-all-textb {
@@ -731,7 +751,7 @@ onMounted(() => {
 .menu-title {
     font-size: 16px;
     font-weight: bold;
-    color: #a3329e;
+    color: #ff33ee;
     text-align: center;
     padding: 10px 0 20px;
     border-bottom: 1px solid #eee;
@@ -751,12 +771,12 @@ onMounted(() => {
 }
 
 .mobile-menu-active {
-    background: #a3329e;
+    background: #ff33ee;
     color: #333;
 }
 
 .mobile-menu-active:hover {
-    background: #a3329e;
+    background: #ff33ee;
 }
 
 /* 媒体查询：手机端 历史失80px */

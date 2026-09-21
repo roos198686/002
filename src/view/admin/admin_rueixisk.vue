@@ -1,244 +1,262 @@
 <template>
-    <div class="maina">
-        <div class="all">
-            <div class="search-box">
-                <span class="search-label">输入用户名：</span>
-                <input v-model="searchName" placeholder="请输入用户名模糊搜索" @input="getUserList" class="input" />
-            </div>
+    <div class="admin-page">
+        <div class="page-title">用户管理</div>
 
-            <div class="role-tabs">
-                <div class="tab-item" :class="{ active: currentRole === 1 }" @click="switchRole(1)">
-                    普通用户
-                </div>
-                <div class="tab-item" :class="{ active: currentRole === 2 }" @click="switchRole(2)">
-                    入驻用户
-                </div>
-            </div>
-
-            <div class="user-table-wrap no-scroll" style="max-height: 650px; overflow-y: auto; display: block;margin-top: 15px;"
-                ref="scrollBox">
-                <div class="user-item"
-                    style="display: flex; align-items: center; padding: 5px 15px;background-color: #ff33ee;color: #fff;">
-                    <div class="user-info" style="flex: 1; display: flex;">
-                        <div style="width: 10%;">ID</div>
-                        <div style="width: 10%;">用户名</div>
-                        <div style="width: 10%;">昵称</div>
-                        <div style="width: 10%;">角色</div>
-                        <div style="width: 10%;">点赞数</div>
-                        <div style="width: 10%;">查看数</div>
-                        <div style="width: 10%;">VIP</div>
-                        <div style="width: 10%;">余额</div>
-                    </div>
-                    <div style="width: 10%; text-align: left;font-size: 13px;">编辑</div>
-                </div>
-
-                <div v-for="item in showList" :key="item.id" class="user-item" style="display: flex;">
-                    <div class="user-info" style="flex: 1; display: flex;text-align: left;">
-                        <div style="width: 10%;">{{ item.id }}</div>
-                        <div style="width: 10%;">{{ item.username }}</div>
-                        <div style="width: 10%;">{{ item.nickname }}</div>
-                        <div style="width: 10%;">{{ item.role_level == 1 ? '普通用户' : '入驻' }}</div>
-                        <div style="width: 10%;">{{ item.like_count }}</div>
-                        <div style="width: 10%;">{{ item.view_count }}</div>
-                        <div style="width: 10%;">{{ item.vip_level }}</div>
-                        <div style="width: 10%;">{{ item.balance }}</div>
-                    </div>
-                    <div style="width: 10%; text-align: center;font-size: 13px;display: flex;">
-                        <div class="primary" @click="openEdit(item)" :style="userinfo.status != 3 ? '' : 'pointer-events: none;background-color: #555;'">编辑</div>
-                    </div>
-                </div>
-                <div v-if="loading" style="padding:10px;text-align:center;font-size: 13px;">加载中.....</div>
-                <div v-if="noMore" style="padding:10px;text-align:center;font-size: 13px;">已加载全部</div>
-            </div>
+        <!-- 顶部搜索栏 -->
+        <div class="filter-bar">
+            <el-input
+                v-model="searchName"
+                placeholder="请输入用户名模糊搜索"
+                clearable
+                @keyup.enter="handleSearch"
+                @clear="handleSearch"
+            />
+            <el-button type="primary" @click="handleSearch">搜索</el-button>
+            <el-button @click="handleReset">重置</el-button>
         </div>
 
-        <!-- eDIV 弹窗：遮�?+ 内容 -->
-        <div v-if="editVisible" class="my-dialog-mask" @click.self="editVisible = false"></div>
-        <div v-if="editVisible" class="my-dialog">
-            <div class="my-dialog-head">编辑用户信息</div>
-            <div class="edit-form">
-                <div class="form-item">
-                    <label>用户名</label>
-                    <div class="text">{{ editForm.username }}</div>
-                </div>
-                <div class="form-item">
-                    <label>角色等级</label>
-                    <el-select v-model="roleText" placeholder="请选择角色">
+        <!-- 角色切换 -->
+        <el-tabs v-model="currentRole" @tab-change="handleRoleChange">
+            <el-tab-pane label="普通用户" :name="1" />
+            <el-tab-pane label="入驻用户" :name="2" />
+        </el-tabs>
+
+        <!-- 用户表格 -->
+        <el-table :data="pagedList" v-loading="loading" border stripe row-key="id">
+            <el-table-column prop="id" label="ID" width="80" />
+            <el-table-column prop="username" label="用户名" min-width="120" show-overflow-tooltip />
+            <el-table-column prop="nickname" label="昵称" min-width="120" show-overflow-tooltip />
+            <el-table-column label="角色" width="100">
+                <template #default="{ row }">
+                    {{ row.role_level == 1 ? '普通用户' : '入驻用户' }}
+                </template>
+            </el-table-column>
+            <el-table-column prop="like_count" label="点赞数" width="90" />
+            <el-table-column prop="view_count" label="查看数" width="90" />
+            <el-table-column prop="vip_level" label="VIP" width="80" />
+            <el-table-column prop="balance" label="余额" width="100" />
+            <el-table-column label="编辑" width="90" fixed="right">
+                <template #default="{ row }">
+                    <el-button link type="primary" :disabled="userInfo.status === 3" @click="openEdit(row)">
+                        编辑
+                    </el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+
+        <!-- 底部分页 -->
+        <div class="pager-bar">
+            <el-pagination
+                v-model:current-page="currentPage"
+                v-model:page-size="pageSize"
+                :page-sizes="[10, 20, 50]"
+                :total="filteredList.length"
+                background
+                layout="total, sizes, prev, pager, next, jumper"
+                @size-change="handleSizeChange"
+            />
+        </div>
+
+        <!-- 编辑用户弹窗 -->
+        <el-dialog v-model="editVisible" title="编辑用户信息" width="480px">
+            <el-form label-width="80px">
+                <el-form-item label="用户名">
+                    <el-input v-model="editForm.username" disabled />
+                </el-form-item>
+                <el-form-item label="角色等级">
+                    <el-select v-model="roleText" placeholder="请选择角色" style="width: 100%;">
                         <el-option label="普通用户" value="普通用户" />
                         <el-option label="入驻用户" value="入驻用户" />
                     </el-select>
-                </div>
-                <div class="form-item">
-                    <label>点赞数</label>
-                    <el-input v-model.number="editForm.like_count" :disabled="roleText === '普通用户'" />
-                </div>
-                <div class="form-item">
-                    <label>查看数</label>
-                    <el-input v-model.number="editForm.view_count" :disabled="roleText === '普通用户'" />
-                </div>
-            </div>
-            <div style="display: flex;flex-direction: row;justify-content: flex-end;gap:10px;padding: 30px;">
-                <div class="primaryno" @click="editVisible = false">取消</div>
-                <div class="primaryyes" @click="saveEdit">保存修改</div>
-            </div>
-        </div>
-        
-        <!-- 提示 -->
-        <div class="copy-toast" v-if="showToast">
-            <div style="font-size:30px;">
-                <Icon icon="iconoir:xmark" width="58" v-if="!yesno" />
-                <Icon icon="iconoir:check" width="58" v-else />
-            </div>
-            <div style="font-size:16px; margin-top:10px;">{{ showtext }}</div>
-        </div>
+                </el-form-item>
+                <el-form-item label="点赞数">
+                    <el-input-number
+                        v-model="editForm.like_count"
+                        :disabled="roleText === '普通用户'"
+                        controls-position="right"
+                        style="width: 100%;"
+                    />
+                </el-form-item>
+                <el-form-item label="查看数">
+                    <el-input-number
+                        v-model="editForm.view_count"
+                        :disabled="roleText === '普通用户'"
+                        controls-position="right"
+                        style="width: 100%;"
+                    />
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <el-button @click="editVisible = false">取消</el-button>
+                <el-button type="primary" @click="saveEdit">保存修改</el-button>
+            </template>
+        </el-dialog>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, ref, onUnmounted } from 'vue';
+import { onMounted, reactive, ref, computed } from 'vue';
+import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
 import router from '@/router';
-import { Icon } from '@iconify/vue';
-const showToast = ref(false);
-const showtext = ref('');
-const yesno = ref(false);
+import './admin-common.css';
+
+// 当前登录的后台用户
+interface AdminUser {
+    id?: number;
+    status?: number;
+    group_level?: string;
+}
+
+// 用户列表项（只声明页面使用到的字段，后端为 SELECT * 返回）
+interface UserRow {
+    id: number;
+    username: string;
+    nickname: string;
+    role_level: number;
+    like_count: number;
+    view_count: number;
+    vip_level: number | string;
+    balance: number;
+    city?: string;
+    group_user?: string;
+}
+
+// 管理员组别（admin_user 表）
+interface AdminGroupRow {
+    id?: number;
+    group_level?: string;
+    [key: string]: unknown;
+}
+
+const userInfo = reactive<AdminUser>(
+    JSON.parse(localStorage.getItem('adminuser') || '{}') as AdminUser
+);
+
+// 列表接口固定取前 20 条（与原逻辑一致：page=1, pageSize=20，前端本地过滤/分页）
+const API_PAGE_SIZE = 20;
 
 const searchName = ref('');
 const currentRole = ref(1);
-const allUserList = ref<any[]>([]);
-const userList = ref<any[]>([]);
-const showList = ref<any[]>([]);
-
-const scrollBox = ref<HTMLDivElement>();
-const page = ref(1);
-const pageSize = 20;
+const allUserList = ref<UserRow[]>([]);
 const loading = ref(false);
-const noMore = ref(false);
 
+// 本地分页
+const currentPage = ref(1);
+const pageSize = ref(10);
+
+// 按角色过滤后的列表
+const filteredList = computed(() =>
+    allUserList.value.filter(item => item.role_level === currentRole.value)
+);
+
+// 当前页展示数据
+const pagedList = computed(() => {
+    const start = (currentPage.value - 1) * pageSize.value;
+    return filteredList.value.slice(start, start + pageSize.value);
+});
+
+// 编辑弹窗
 const editVisible = ref(false);
-const userInfo = reactive(JSON.parse(localStorage.getItem("adminuser") || "{}"));
-const zubeikd = ref<any[]>([]);
-const grouplevel = ref('');
+const zubeikd = ref<AdminGroupRow[]>([]);
+const grouplevel = ref<string>('');
 
-
-const xujfkdwobei = async () => {
-    const { data } = await request.get('/api/admin/admin_user/zubeikd');
-    zubeikd.value = data.data || [];
-};
-
-const editForm = ref({
+const editForm = ref<UserRow>({
     id: 0,
     username: '',
+    nickname: '',
     role_level: 1,
     like_count: 0,
     view_count: 0,
-    vip_level: '',
+    vip_level: 0,
     balance: 0,
     city: '',
     group_user: '',
 });
 
-const roleText = ref('')
+const roleText = ref('');
 
-const roleMap = {
+const roleMap: Record<number, string> = {
     1: '普通用户',
-    2: '入驻用户'
-}
-const roleToNum = {
+    2: '入驻用户',
+};
+
+const roleToNum: Record<string, number> = {
     '普通用户': 1,
-    '入驻用户': 2
-}
-
-const resetPage = () => {
-    page.value = 1;
-    showList.value = [];
-    noMore.value = false;
+    '入驻用户': 2,
 };
 
-// 过滤角色 只过滤一级列表
-const filterUserList = () => {
-    // 全部原始数据
-    let temp = allUserList.value.filter(item => item.role_level === currentRole.value);
-    userList.value = temp;
-
-    resetPage();
-    // 先加载第一级列表
-    loadFirstPage();
+// 查询管理员组别（保持与原文件一致的请求）
+const xujfkdwobei = async () => {
+    const { data } = await request.get('/api/admin/admin_user/zubeikd');
+    zubeikd.value = data.data || [];
 };
 
-// 初始加载第一级列表
-const loadFirstPage = () => {
-    const start = 0;
-    const end = pageSize;
-    showList.value = userList.value.slice(start, end);
-    noMore.value = showList.value.length >= userList.value.length;
-};
-
-// 滚动加载下一步
-const loadMore = () => {
-    if (noMore.value) return;
-
-    const el = scrollBox.value;
-    if (!el) return;
-
-    const { scrollTop, scrollHeight, clientHeight } = el;
-    if (scrollTop + clientHeight >= scrollHeight - 50) {
-        page.value++;
-        const start = (page.value - 1) * pageSize;
-        const end = page.value * pageSize;
-
-        // 关键：往后截，不是从头截'
-        const nextArr = userList.value.slice(start, end);
-        showList.value = [...showList.value, ...nextArr];
-
-        if (end >= userList.value.length) {
-            noMore.value = true;
-        }
+// 用户列表（全部）
+const getAllUser = async () => {
+    loading.value = true;
+    try {
+        const status = userInfo.status;
+        const { data } = await request.get('/api/admin/admin_user/listAll', {
+            params: {
+                status: status,
+                page: 1,
+                pageSize: API_PAGE_SIZE,
+            },
+        });
+        allUserList.value = data.data || [];
+        currentPage.value = 1;
+    } finally {
+        loading.value = false;
     }
 };
 
-const switchRole = (val: number) => {
-    currentRole.value = val;
-    filterUserList();
-};
-
-
-//用户列表'
-const getAllUser = async () => {
-    const status = userInfo.status;
-    const { data } = await request.get('/api/admin/admin_user/listAll', {
-        params: {
-            status: status,
-            page: page.value,
-            pageSize: pageSize
-        }
-    });
-    allUserList.value = data.data;
-    filterUserList();
-};
-
-//查询用户 原版逻辑不动'
+// 查询用户（原版逻辑：关键字为空走列表，非空走搜索）
 const getUserList = async () => {
-    resetPage();
+    currentPage.value = 1;
     if (!searchName.value) {
         getAllUser();
         return;
     }
-    const { data } = await request.get('/api/admin/admin_user/search', {
-        params: { username: searchName.value }
-    });
-    allUserList.value = data.data;
-    filterUserList();
+    loading.value = true;
+    try {
+        const { data } = await request.get('/api/admin/admin_user/search', {
+            params: { username: searchName.value },
+        });
+        allUserList.value = data.data || [];
+    } finally {
+        loading.value = false;
+    }
 };
 
-const openEdit = async (row) => {
-    editVisible.value = true
-    editForm.value = { ...row }
-    roleText.value = roleMap[row.role_level]
+const handleSearch = () => {
+    getUserList();
+};
+
+const handleReset = () => {
+    searchName.value = '';
+    getUserList();
+};
+
+// 切换角色：仅本地重新过滤，不重新请求（与原逻辑一致）
+const handleRoleChange = () => {
+    currentPage.value = 1;
+};
+
+const handleSizeChange = () => {
+    currentPage.value = 1;
+};
+
+// 打开编辑弹窗
+const openEdit = async (row: UserRow) => {
+    editVisible.value = true;
+    editForm.value = { ...row };
+    roleText.value = roleMap[row.role_level] || '';
     await xujfkdwobei();
-    grouplevel.value = row.group_user;
-}
-//保存修改 原版不动'
+    grouplevel.value = row.group_user || '';
+};
+
+// 保存修改（参数与原文件完全一致）
 const saveEdit = async () => {
     try {
         const role_level = roleToNum[roleText.value];
@@ -252,24 +270,14 @@ const saveEdit = async () => {
         const { data } = await request.get('/api/admin/admin_user/update', { params });
 
         if (data.code === 1) {
-            editVisible.value = false
-            showtext.value = '保存成功';
-            yesno.value = true;
-            showToast.value = true;
-            setTimeout(() => showToast.value = false, 1500);
-
+            editVisible.value = false;
+            ElMessage.success('保存成功');
             getUserList();
         } else {
-            showtext.value = '保存失败';
-            yesno.value = false;
-            showToast.value = true;
-            setTimeout(() => showToast.value = false, 1500);
+            ElMessage.error('保存失败');
         }
     } catch (err) {
-        showtext.value = '保存失败';
-        yesno.value = false;
-        showToast.value = true;
-        setTimeout(() => showToast.value = false, 1500);
+        ElMessage.error('保存失败');
         console.error(err);
     }
 };
@@ -278,231 +286,14 @@ onMounted(() => {
     const adminStr = localStorage.getItem('adminuser');
     if (!adminStr) {
         router.replace('/admin_login');
+        return;
     }
     getUserList();
-
-    // 只加这一句：绑定滚动'
-    scrollBox.value?.addEventListener('scroll', loadMore);
-});
-
-onUnmounted(() => {
-    scrollBox.value?.removeEventListener('scroll', loadMore);
 });
 </script>
 
 <style scoped>
-.maina {
-    padding: 20px;
-}
-
-.search-box {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    gap: 5px;
-}
-
-.search-label {
-    white-space: nowrap;
-    font-size: 13px;
-}
-
-.search-box :deep(.input) {
-    width: 260px;
-}
-
-.role-tabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.tab-item {
-    padding: 2px 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 13px;
-}
-
-.tab-item:hover {
-    background: #fcebfc;
-}
-
-.tab-item.active {
-    background: #ff33ee;
-    color: #333;
-    border-color: #ff33ee;
-}
-
-.user-table-wrap {
-    border: 1px solid #eee;
-    border-radius: 6px;
-}
-
-.no-scroll {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
-.no-scroll::-webkit-scrollbar {
-    display: none;
-}
-
-.user-item {
-    display: flex;
-    padding: 5px 15px;
-    border-bottom: 1px solid #d3d2d2;
-    background-color: #eeeeee;
-    text-align: left;
-}
-
-.user-item:hover {
-    background-color: #dad8d8;
-}
-
-.user-item:last-child {
-    border-bottom: none;
-}
-
-.user-info {
-    display: flex;
-    gap: 20px;
-    font-size: 13px;
-    /* color: #333; */
-}
-
-.empty-tip {
-    text-align: center;
-    padding: 30px 0;
-    color: #666;
-}
-
-.edit-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px 30px;
-    font-size: 13px;
-}
-
-.form-item {
-    display: flex;
-    align-items: center;
-}
-
-.form-item label {
-    width: 60px;
-    text-align: right;
-    margin-right: 12px;
-    font-weight: 500;
-    color: #333;
-}
-
-.form-item .text {
-    padding: 0 10px;
-    line-height: 32px;
-
-}
-
-.primary {
-    background-color: #02804b;
-    color: #fff;
-    padding: 2px 10px;
-    border-radius: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-}
-
-.primaryyes {
-    background-color: #ff33ee;
-    color: #fff;
-    padding: 5px 15px;
-    border-radius: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 13px;
-    cursor: pointer;
-}
-
-.primaryno {
-    background-color: #dfdfdf;
-    color: #000;
-    padding: 5px 15px;
-    border-radius: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 13px;
-    cursor: pointer;
-}
-
-.form-item :deep(.input),
-.form-item :deep(.select) {
-    flex: 1;
-}
-
-/* 自定义弹窗样�?*/
-.my-dialog-mask {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.589);
-    z-index: 999;
-}
-
-.my-dialog {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 520px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    /* padding: 20px; */
-}
-
-.my-dialog-head {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    color: #333;
-    background-color: #e02ddb;
-    padding: 10px 0;
-    border-radius: 8px 8px 0 0;
-}
-
-/* 弹窗 */
-.copy-toast {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(46, 46, 46, 0.8);
-    color: #333;
-    padding: 20px;
-    border-radius: 8px;
-    z-index: 9999;
-    min-width: 250px;
-}
-
-:global(.input) {
-  border: 1px solid #ccc;
-  padding: 5px;
-  border-radius: 4px;
-  outline: none;
-}
-
-:global(.input:focus) {
-  border: 1px solid #ccc;
-  /* 强制提权，覆盖全局样式 */
-  /* border-color: #ff33ee !important; */
+.admin-page :deep(.el-tabs) {
+    margin-bottom: 6px;
 }
 </style>

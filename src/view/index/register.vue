@@ -243,7 +243,7 @@ const handleSubmit = async (): Promise<void> => {
             // 清空表單'
             formData.value = { username: '', pwd: '', rePwd: '', agree: false }
             setTimeout(() => {
-                router.push('/login')
+                router.replace('/login')
             }, 1200)
         } else {
             showToast(res.msg || '註冊失敗')
@@ -259,7 +259,7 @@ const handleSubmit = async (): Promise<void> => {
 
 // 跳轉登入'
 const loginto = (): void => {
-    router.push('/login')
+    router.replace('/login')
 }
 
 // 事件掛載與銷毀'

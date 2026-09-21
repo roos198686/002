@@ -1,13 +1,15 @@
 <template>
   <router-view v-slot="{ Component }">
     <transition :name="transitionName">
-      <component :is="Component" :key="route.fullPath" />
+      <keep-alive :include="cachedViews">
+        <component :is="Component" :key="viewKey" />
+      </keep-alive>
     </transition>
   </router-view>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { Capacitor } from '@capacitor/core'
 import request from '@/utils/request'
@@ -32,6 +34,21 @@ const refreshGlobalUnread = () => {
 
 const router = useRouter()
 const route = useRoute()
+
+// ========== 頁面緩存：進入下一頁保留實例與滾動位置，返回不重新加載 ==========
+// 組件名需與頁面內 defineOptions({ name }) 一致
+const cachedViews = [
+  'Home',          // 主框架（含首頁動態、商城、通訊錄等 tab 子頁）
+  'CollectList',   // 商品收藏
+  'OrdersList',    // 我的訂單
+  'CartList'       // 購物車
+]
+
+// 主框架下的 tab 子路由共用同一個 Home 實例；其他頁按完整路徑區分（詳情頁參數不同互不覆用）
+const viewKey = computed(() => {
+  if (route.matched[0] && route.matched[0].path === '/home') return 'Home'
+  return route.fullPath
+})
 
 // ========== 路由切換過渡動畫（右滑返回 = slide-back，前進 = slide-forward） ==========
 const transitionName = ref('slide-forward')

@@ -1,145 +1,175 @@
 <template>
-    <div class="goods-manage">
-        <!-- 顶部搜索&操作失敗-->
-        <div class="search-bar">
-            <div class="search-item">
-                <input v-model="searchKey" type="text" placeholder="請輸入商品名稱搜尋" class="search-input" />
-                <div class="btn search-btn" @click="handleSearch">搜尋</div>
-            </div>
+    <div class="admin-page">
+        <div class="page-title">商品管理</div>
+
+        <!-- 顶部筛选栏 -->
+        <div class="filter-bar">
+            <el-input
+                v-model="searchKey"
+                placeholder="請輸入商品名稱搜尋"
+                clearable
+                style="width: 260px"
+                @keyup.enter="handleSearch"
+            />
+            <el-button type="primary" @click="handleSearch">搜尋</el-button>
+            <el-button @click="handleReset">重置</el-button>
         </div>
 
-        <!-- 商品列表区域 -->
-        <div class="table-wrap" >
-            <div class="table-head">
-                <div class="td td-id">ID</div>
-                <div class="td td-img">商品圖片</div>
-                <div class="td td-name">商品名稱</div>
-                <div class="td td-price">售價</div>
-                <div class="td td-stock">庫存</div>
-                <div class="td td-stock">已售</div>
-                <div class="td td-status">狀態</div>
-                <div class="td td-operate">操作</div>
-            </div>
+        <!-- 商品列表 -->
+        <el-table :data="goodsList" border stripe v-loading="loading" style="width: 100%">
+            <el-table-column prop="id" label="ID" width="80" align="center" />
+            <el-table-column label="商品圖片" width="90" align="center">
+                <template #default="{ row }">
+                    <el-image
+                        class="thumb"
+                        :src="baseURL + row.cover"
+                        :preview-src-list="[baseURL + row.cover]"
+                        fit="cover"
+                        preview-teleported
+                    />
+                </template>
+            </el-table-column>
+            <el-table-column prop="name" label="商品名稱" min-width="180" show-overflow-tooltip />
+            <el-table-column label="售價" width="120" align="right">
+                <template #default="{ row }">{{ formatMoney(row.price) }}</template>
+            </el-table-column>
+            <el-table-column prop="stock" label="庫存" width="90" align="center" />
+            <el-table-column prop="sales" label="已售" width="90" align="center" />
+            <el-table-column label="狀態" width="100" align="center">
+                <template #default="{ row }">
+                    <el-tag :type="row.status === 1 ? 'success' : 'info'">
+                        {{ row.status === 1 ? '已上架' : '已下架' }}
+                    </el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column label="操作" width="220" align="center" fixed="right">
+                <template #default="{ row }">
+                    <el-button
+                        size="small"
+                        type="primary"
+                        :disabled="userInfo.status === 3"
+                        @click="openEditDialog(row)"
+                    >編輯</el-button>
+                    <el-button
+                        size="small"
+                        :type="row.status === 1 ? 'warning' : 'success'"
+                        :disabled="userInfo.status === 3"
+                        @click="changeShelf(row)"
+                    >{{ row.status === 1 ? '下架' : '上架' }}</el-button>
+                    <el-button
+                        size="small"
+                        type="danger"
+                        :disabled="userInfo.status === 3"
+                        @click="delGoods(row.id)"
+                    >刪除</el-button>
+                </template>
+            </el-table-column>
+            <template #empty>暫無商品數據</template>
+        </el-table>
 
-            <div class="table-body hide-scroll" ref="scrollBox" @scroll="onScroll">
-                <div class="table-row" v-for="item in goodsList" :key="item.id">
-                    <div class="td td-id">{{ item.id }}</div>
-                    <div class="td td-img">
-                        <img :src="baseURL + item.cover" alt="" class="goods-img" />
-                    </div>
-                    <div class="td td-name">{{ item.name }}</div>
-                    <div class="td td-price">{{ item.price }}</div>
-                    <div class="td td-stock">{{ item.stock }}</div>
-                    <div class="td td-stock">{{ item.sales }}</div>
-                    <div class="td td-status">
-                        <span :class="item.status === 1 ? 'status-on' : 'status-off'">
-                            {{ item.status === 1 ? '已上架' : '已下架' }}
-                        </span>
-                    </div>
-                    <div class="td td-operate">
-                        <span class="operate-btn edit" @click="openEditDialog(item)" :style="userinfo.status != 3 ? '' : 'pointer-events: none;background-color: #ccc;'">編輯</span>
-                        <span class="operate-btn shelf" @click="changeShelf(item)" :style="userinfo.status != 3 ? '' : 'pointer-events: none;background-color: #ccc;'">
-                            {{ item.status === 1 ? '下架' : '上架' }}
-                        </span>
-                        <span class="operate-btn del" @click="delGoods(item.id)" :style="userinfo.status != 3 ? '' : 'pointer-events: none;background-color: #ccc;'">刪除</span>
-                    </div>
-                </div>
-                <!-- 空數據-->
-                <div class="empty-tip" v-if="goodsList.length === 0 && !loading">暫無商品數據</div>
-                <!-- 加载提示 -->
-                <div class="loading-tip" v-if="loading">載入中.....</div>
-                <!-- 无更多數據-->
-                <div class="nomore-tip" v-if="noMore && goodsList.length">沒有更多數據</div>
-            </div>
+        <!-- 分页器（服务端分页，参数名 page / pageSize 保持不变） -->
+        <div class="pager-bar">
+            <el-pagination
+                background
+                layout="total, sizes, prev, pager, next, jumper"
+                :page-sizes="[10, 20, 50]"
+                :total="total"
+                v-model:current-page="page"
+                v-model:page-size="pageSize"
+                @size-change="onSizeChange"
+                @current-change="onPageChange"
+            />
         </div>
 
-        <!-- 編輯商品彈窗（已改：图片地址→已售数量、全部非必填欄位-->
-        <div class="dialog-mask" v-if="dialogVisible">
-            <div class="dialog-box">
-                <div class="dialog-title">
-                    編輯商品
-                </div>
-                <div class="dialog-form">
-                    <div class="form-item">
-                        <label>商品名稱</label>
-                        <input v-model="form.goods_name" placeholder="請輸入商品名稱" />
-                    </div>
-                    <div style="display: flex;flex-direction: row;gap: 10px;">
-                        <div class="form-item">
-                            <label>商品售價</label>
-                            <input v-model="form.price" type="number" placeholder="請輸入售價" />
-                        </div>
-                        <div class="form-item">
-                            <label>商品庫存</label>
-                            <input v-model="form.stock" type="number" placeholder="請輸入庫存數量" />
-                        </div>
-                        <!-- 原：商品圖片地址"  ：改为：已销售数据设置-->
-                        <div class="form-item">
-                            <label>已銷售數量</label>
-                            <input v-model="form.sales" type="number" placeholder="請輸入已銷售數量" />
-                        </div>
-                    </div>
-                    <div class="form-item">
-                        <label>商品描述</label>
-                        <textarea v-model="form.goods_desc" placeholder="請輸入商品描述"></textarea>
-                    </div>
-                    <div class="form-item">
-                        <label>上架狀態</label>
-                        <div class="radio-group">
-                            <div style="width: 100px;display: flex;flex-direction: row;gap: 10px;">
-                                <span><input type="radio" v-model="form.status" :value="1" /></span><span>上架</span> 
-                            </div>
-                            <div style="width: 100px;display: flex;flex-direction: row;gap: 10px;">
-                                 <span><input type="radio" v-model="form.status" :value="0" /></span><span>下架</span> 
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="dialog-btn">
-                    <div class="btn cancel" @click="dialogVisible = false">取消</div>
-                    <div class="btn submit" @click="submitForm">確認提交</div>
-                </div>
-            </div>
-        </div>
+        <!-- 編輯商品彈窗 -->
+        <el-dialog v-model="dialogVisible" title="編輯商品" width="600px" :close-on-click-modal="false">
+            <el-form :model="form" label-width="100px">
+                <el-form-item label="商品名稱">
+                    <el-input v-model="form.goods_name" placeholder="請輸入商品名稱" />
+                </el-form-item>
+                <el-form-item label="商品售價">
+                    <el-input v-model="form.price" type="number" placeholder="請輸入售價" />
+                </el-form-item>
+                <el-form-item label="商品庫存">
+                    <el-input v-model="form.stock" type="number" placeholder="請輸入庫存數量" />
+                </el-form-item>
+                <el-form-item label="已銷售數量">
+                    <el-input v-model="form.sales" type="number" placeholder="請輸入已銷售數量" />
+                </el-form-item>
+                <el-form-item label="商品描述">
+                    <el-input v-model="form.goods_desc" type="textarea" :rows="3" placeholder="請輸入商品描述" />
+                </el-form-item>
+                <el-form-item label="上架狀態">
+                    <el-radio-group v-model="form.status">
+                        <el-radio :value="1">上架</el-radio>
+                        <el-radio :value="0">下架</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <el-button @click="dialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="submitForm">確認提交</el-button>
+            </template>
+        </el-dialog>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import request from '@/utils/request'
-import { ElMessage } from 'element-plus'
-const baseURL = request.defaults.baseURL || '';
-const userInfo = reactive(JSON.parse(localStorage.getItem("adminuser") || "{}"));
+import { ElMessage, ElMessageBox } from 'element-plus'
+import './admin-common.css'
+
+interface AdminUser {
+    status?: number
+}
+
+interface GoodsItem {
+    id: number
+    name: string
+    cover: string
+    price: number | string
+    stock: number
+    intro: string
+    status: number
+    sales: number | string
+}
+
+const baseURL: string = request.defaults.baseURL || ''
+const userInfo = reactive<AdminUser>(JSON.parse(localStorage.getItem('adminuser') || '{}'))
+
 // 搜尋關鍵字
 const searchKey = ref('')
-// 滾動容器
-const scrollBox = ref<HTMLDivElement | null>(null)
 
 // 商品列表
-const goodsList = ref<any[]>([])
+const goodsList = ref<GoodsItem[]>([])
 
-// 彈窗狀態切換'
+// 彈窗
 const dialogVisible = ref(false)
 
-// 表單數據：新登入sales 字段'
+// 表單數據
 const form = reactive({
     id: 0,
     goods_name: '',
-    price: '',
-    stock: '',
+    price: '' as string | number,
+    stock: '' as string | number,
     goods_img: '',
     goods_desc: '',
     status: 1,
-    sales: ''
+    sales: '' as string | number
 })
 
-// 分页参数'
+// 分页参数
 const page = ref(1)
 const pageSize = ref(10)
+const total = ref(0)
 const loading = ref(false)
-const noMore = ref(false)
 
-// 重置表单'
+const formatMoney = (val: number | string) => {
+    const num = Number(val || 0)
+    return isNaN(num) ? '0.00' : num.toFixed(2)
+}
+
 const resetForm = () => {
     form.id = 0
     form.goods_name = ''
@@ -151,11 +181,9 @@ const resetForm = () => {
     form.sales = ''
 }
 
-// 分页获取商品列表'
+// 分页获取商品列表
 const getGoodsList = async () => {
-    if (loading.value || noMore.value) return
     loading.value = true
-
     try {
         const { data } = await request.get('/api/admin/admin_shop/list', {
             params: {
@@ -166,45 +194,47 @@ const getGoodsList = async () => {
         })
 
         if (data.code === 1) {
-            const list = data.data || []
-            if (page.value === 1) {
-                goodsList.value = list
-            } else {
-                goodsList.value.push(...list)
-            }
+            const list: GoodsItem[] = data.data || []
+            goodsList.value = list
+            // 后端未返回总数，按本页条数推算：满页则认为还有下一页
             if (list.length < pageSize.value) {
-                noMore.value = true
+                total.value = (page.value - 1) * pageSize.value + list.length
+            } else {
+                total.value = page.value * pageSize.value + 1
             }
         } else {
             ElMessage.error(data.msg || '取得列表失敗')
         }
     } catch (err) {
+        console.log(err)
         ElMessage.error('網路異常')
     } finally {
         loading.value = false
     }
 }
 
-// 搜索重置分页
 const handleSearch = () => {
     page.value = 1
-    noMore.value = false
-    goodsList.value = []
     getGoodsList()
 }
 
-// 滚动触底加载下一步
-const onScroll = () => {
-    if (!scrollBox.value) return
-    const { scrollTop, scrollHeight, clientHeight } = scrollBox.value
-    if (scrollTop + clientHeight >= scrollHeight - 20) {
-        page.value++
-        getGoodsList()
-    }
+const handleReset = () => {
+    searchKey.value = ''
+    page.value = 1
+    getGoodsList()
 }
 
-// 開啟編輯彈窗：回显完整原有数据）
-const openEditDialog = (row: any) => {
+const onSizeChange = () => {
+    page.value = 1
+    getGoodsList()
+}
+
+const onPageChange = () => {
+    getGoodsList()
+}
+
+// 開啟編輯彈窗（回显原有数据）
+const openEditDialog = (row: GoodsItem) => {
     resetForm()
     form.id = row.id
     form.goods_name = row.name
@@ -217,17 +247,16 @@ const openEditDialog = (row: any) => {
     dialogVisible.value = true
 }
 
-// 提交編輯：空字段不傳，保留原數據'
+// 提交編輯：空字段不傳，保留原數據
 const submitForm = async () => {
-    // 组装参数：只传非空字段，空值不传后台系统'
-    const params: any = { id: form.id }
+    const params: Record<string, string | number> = { id: form.id }
     if (form.goods_name !== '') params.goods_name = form.goods_name
     if (form.price !== '') params.price = form.price
     if (form.stock !== '') params.stock = form.stock
     if (form.goods_img !== '') params.goods_img = form.goods_img
     if (form.goods_desc !== '') params.goods_desc = form.goods_desc
     if (form.sales !== '') params.sales = form.sales
-    // 状态始终传递（单选框必有值）'
+    // 状态始终传递（单选框必有值）
     params.status = form.status
 
     try {
@@ -235,21 +264,18 @@ const submitForm = async () => {
         if (res.data.code === 1) {
             ElMessage.success('編輯成功')
             dialogVisible.value = false
-            // 刷新列表'
-            page.value = 1
-            noMore.value = false
-            goodsList.value = []
             getGoodsList()
         } else {
             ElMessage.error(res.data.msg || '操作失敗')
         }
     } catch (err) {
+        console.log(err)
         ElMessage.error('網路異常')
     }
 }
 
-// 上下架切換成功'
-const changeShelf = async (row: any) => {
+// 上下架切換
+const changeShelf = async (row: GoodsItem) => {
     try {
         const { data } = await request.post('/api/admin/admin_shop/shelf', {
             id: row.id,
@@ -257,33 +283,42 @@ const changeShelf = async (row: any) => {
         })
         if (data.code === 1) {
             ElMessage.success('狀態切換成功')
-            page.value = 1
-            noMore.value = false
-            goodsList.value = []
             getGoodsList()
         } else {
             ElMessage.error(data.msg || '操作失敗')
         }
     } catch (err) {
+        console.log(err)
         ElMessage.error('網路異常')
     }
 }
 
-// 刪除商品'
+// 刪除商品
 const delGoods = async (id: number) => {
-    if (!window.confirm('確定要刪除此商品嗎？')) return
+    try {
+        await ElMessageBox.confirm('確定要刪除此商品嗎？', '提示', {
+            confirmButtonText: '確定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            confirmButtonClass: 'el-button--danger'
+        })
+    } catch {
+        return
+    }
     try {
         const { data } = await request.get('/api/admin/admin_shop/del', { params: { id } })
         if (data.code === 1) {
             ElMessage.success('刪除成功')
-            page.value = 1
-            noMore.value = false
-            goodsList.value = []
+            // 删除后若当前页清空，回退一页
+            if (goodsList.value.length === 1 && page.value > 1) {
+                page.value--
+            }
             getGoodsList()
         } else {
             ElMessage.error('刪除失敗')
         }
     } catch (err) {
+        console.log(err)
         ElMessage.error('網路異常')
     }
 }
@@ -291,288 +326,7 @@ const delGoods = async (id: number) => {
 onMounted(() => {
     getGoodsList()
 })
-
-onUnmounted(() => {
-    scrollBox.value?.removeEventListener('scroll', onScroll)
-})
 </script>
 
 <style scoped>
-/* 隱藏滾動態，開*/
-.hide-scroll {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    max-height: 550px;
-    overflow-y: auto;
-}
-
-.hide-scroll::-webkit-scrollbar {
-    display: none;
-}
-
-.goods-manage {
-    width: 100%;
-    height: 100%;
-    padding: 20px;
-    box-sizing: border-box;
-    background: #fff;
-    color: #333;
-    font-size: 13px;
-}
-
-/* 搜尋聯絡人*/
-.search-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    gap: 15px;
-}
-
-.search-item {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.search-input {
-    width: 280px;
-    height: 25px;
-    padding: 0 10px;
-    background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    color: #333;
-    outline: none;
-}
-
-/* 按鈕通用樣式 */
-.btn {
-    padding: 3px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    text-align: center;
-    user-select: none;
-}
-
-.search-btn {
-    background: #ff33ee;
-    color: #fff;
-}
-
-/* 表格區：*/
-.table-wrap {
-    
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.table-head {
-    display: flex;
-    background: #ff33ee;
-    font-weight: bold;
-    padding: 10px 0;
-    color: #fff;
-}
-
-.table-row {
-    display: flex;
-    align-items: center;
-    padding: 5px 0;
-    border-bottom: 1px solid #ccc;
-}
-
-.table-row:hover {
-    background: #f9f9f9;
-}
-
-/* 單元格寬�?*/
-.td {
-    padding: 0 8px;
-    box-sizing: border-box;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.td-id {
-    width: 5%;
-    text-align: center;
-}
-
-.td-img {
-    width: 10%;
-    text-align: center;
-}
-
-.td-name {
-    width: 24%;
-}
-
-.td-price {
-    width: 7%;
-    text-align: center;
-}
-
-.td-stock {
-    width: 7%;
-    text-align: center;
-}
-
-.td-status {
-    width: 10%;
-    text-align: center;
-}
-
-.td-operate {
-    width: 22%;
-    text-align: center;
-}
-
-.goods-img {
-    width: 40px;
-    height: 40px;
-    object-fit: cover;
-    border-radius: 4px;
-}
-
-/* 狀態標�?*/
-.status-on {
-    color: #67c23a;
-    
-}
-
-.status-off {
-    color: #f56c6c;
-}
-
-/* 操作按鈕 */
-.operate-btn {
-    margin: 0 4px;
-    cursor: pointer;
-    /* border: 1px solid #ccc; */
-    padding: 2px 10px;
-    border-radius: 5px;
-}
-
-.edit {
-    color: #047cf5;
-    background-color: #d9e9fa;
-}
-
-.shelf {
-    color: #e78b01;
-    background-color: #f8eddc;
-}
-
-.del {
-    color: #ee0101;
-    background-color: #f8dede;
-}
-
-.empty-tip,
-.loading-tip,
-.nomore-tip {
-    text-align: center;
-    padding: 20px 0;
-    color: #666;
-}
-
-/* 彈窗遮罩 */
-.dialog-mask {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
-}
-
-.dialog-box {
-    width: 600px;
-    background: #fff;
-    border: 1px solid #444;
-    border-radius: 6px;
-    overflow: hidden;
-    text-align: left;
-}
-
-.dialog-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 7px 20px;
-    font-size: 14px;
-    font-weight: bold;
-    border-bottom: 1px solid #ddd;
-    background-color: #ff33ee;
-    color: #fff;
-}
-
-
-.dialog-form {
-    padding: 20px;
-}
-
-.form-item {
-    margin-bottom: 15px;
-}
-
-.form-item label {
-    display: block;
-    /* margin-bottom: 6px; */
-    color: #333;
-}
-
-.form-item input,
-.form-item textarea {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 8px 10px;
-    background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    color: #333;
-    outline: none;
-}
-
-.form-item textarea {
-    min-height: 80px;
-    resize: none;
-}
-.radio-group {
-    display: flex;
-    flex-direction: row;
-}
-.radio-group label {
-    /* margin-right: 15px; */
-    cursor: pointer;
-}
-
-.dialog-btn {
-    display: flex;
-    gap: 10px;
-    padding: 15px 20px 30px 20px;
-    justify-content: right;
-}
-
-.dialog-btn .btn {
-    /* flex: 1; */
-    padding: 3px 20px;
-}
-
-.cancel {
-    border: 1px solid #999;
-    color: #666;
-    background: transparent;
-}
-
-.submit {
-    background: #ff33ee;
-    color: #fff;
-}
 </style>

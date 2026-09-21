@@ -1,109 +1,166 @@
 <template>
-    <div
-        style="display: flex; height: calc(100vh - 40px); padding: 0 50px 20px 0; box-sizing: border-box; overflow: hidden;">
-        <!-- 左侧联系人列表失败固定宽度 150px -->
-        <div class="left-contact">
-            <div style="width: 100%; height: 100%; display: flex; flex-direction: column;">
-                <div class="user-item top-title">
-                    <div class="title-text">用户</div>
+    <div class="admin-page msg-page">
+        <div class="page-title">聊天查询</div>
+
+        <div class="msg-body">
+            <!-- 左侧联系人区域 -->
+            <div class="left-contact">
+                <div class="filter-bar left-filter">
+                    <el-input
+                        v-model="searchKey"
+                        placeholder="输入昵称/用户名搜索"
+                        clearable
+                        size="small"
+                        @keyup.enter="refreshContacts"
+                    />
+                    <el-button size="small" type="primary" @click="refreshContacts">搜索</el-button>
+                    <el-button size="small" @click="handleReset">重置</el-button>
                 </div>
 
-                <div ref="scrollBox" class="scroll-container">
-                    <div class="list-inner">
-                        <template v-for="group in groupedContacts" :key="group.userId">
-                            <div class="user-item group-header" :class="{ activeaa: group.expanded }"
-                                @click="toggleGroup(group.userId)">
-                                <div class="avatar-wrap">
-                                    <img class="avatar" :src="baseURL + group.avatar" alt="" />
+                <div class="left-table">
+                    <el-table
+                        ref="mainTableRef"
+                        :data="groupedContacts"
+                        border
+                        stripe
+                        size="small"
+                        height="100%"
+                        v-loading="loading"
+                        row-key="userId"
+                        @expand-change="onExpandChange"
+                    >
+                        <el-table-column type="expand">
+                            <template #default="{ row }">
+                                <div class="sub-panel" v-loading="subLoading[row.userId]">
+                                    <el-table
+                                        :data="row.subList"
+                                        size="small"
+                                        :row-class-name="subRowClass"
+                                        @row-click="(item) => toChat(item.id, row.userId, item.name, item.avatar)"
+                                    >
+                                        <el-table-column label="头像" width="56" align="center">
+                                            <template #default="{ row: item }">
+                                                <el-image
+                                                    class="thumb small"
+                                                    :src="baseURL + item.avatar"
+                                                    fit="cover"
+                                                />
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column prop="name" label="用户名" min-width="90" show-overflow-tooltip />
+                                        <el-table-column label="最后消息" min-width="100" show-overflow-tooltip>
+                                            <template #default="{ row: item }">{{ formatLastMsg(item.lastMsg) }}</template>
+                                        </el-table-column>
+                                        <el-table-column label="时间" width="118">
+                                            <template #default="{ row: item }">{{ formatTime(item.timestamp) }}</template>
+                                        </el-table-column>
+                                        <el-table-column label="未读" width="64" align="center">
+                                            <template #default="{ row: item }">
+                                                <el-tag v-if="item.unread_count > 0" type="danger" size="small">
+                                                    {{ item.unread_count > 99 ? '99+' : item.unread_count }}
+                                                </el-tag>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column label="操作" width="86" align="center">
+                                            <template #default="{ row: item }">
+                                                <el-button
+                                                    size="small"
+                                                    type="primary"
+                                                    :disabled="userInfo.status === 3"
+                                                    @click.stop="toChat(item.id, row.userId, item.name, item.avatar)"
+                                                >查看聊天</el-button>
+                                            </template>
+                                        </el-table-column>
+                                        <template #empty>暂无会话</template>
+                                    </el-table>
                                 </div>
-                                <div class="content-wrap">
-                                    <div class="name">{{ group.name }}</div>
-                                </div>
-                                <span class="expand-icon">{{ group.expanded ? '?' : '+' }}</span>
-                            </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="头像" width="56" align="center">
+                            <template #default="{ row }">
+                                <el-image class="thumb small" :src="baseURL + row.avatar" fit="cover" />
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="name" label="用户名" min-width="110" show-overflow-tooltip />
+                        <el-table-column label="时间" width="118">
+                            <template #default="{ row }">
+                                {{ row.last_msg_time ? moment(row.last_msg_time).format('YY/MM/DD HH:mm') : '' }}
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="操作" width="92" align="center">
+                            <template #default="{ row }">
+                                <el-button size="small" type="primary" @click="viewGroup(row)">查看会话</el-button>
+                            </template>
+                        </el-table-column>
+                        <template #empty>暂无联系人</template>
+                    </el-table>
+                </div>
 
-                            <div v-if="group.expanded" class="sub-list">
-                                <div v-if="subLoading[group.userId]" class="tip-text">加载聊天记录..</div>
-                                <div v-for="item in group.subList" :key="item.id" class="user-item sub-item"
-                                    :class="{ active: currentChatId === item.id }"
-                                    @click="toChat(item.id, group.userId, item.name, item.avatar)" :style="userinfo.status != 3 ? '' : 'pointer-events: none;background-color: #555;'">
-                                    <div class="avatar-wrap">
-                                        <img class="avataraa" :src="baseURL + item.avatar" alt="" />
-                                    </div>
-                                    <div class="content-wrap">
-                                        <div class="name">{{ item.name }}</div>
-                                        <div class="last-msg">
-                                            {{
-                                                item.lastMsg == "[T]" ? $t("image")
-                                                    : item.lastMsg == "[Z]" ? $t("transfer")
-                                                        : item.lastMsg == "[Y]" ? $t("card")
-                                                            : item.lastMsg == "[S]" ? $t("video")
-                                                                : item.lastMsg
-                                            }}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div v-if="!subLoading[group.userId] && group.subList.length === 0" class="tip-text">
-                                    暂无会话
-                                </div>
-                            </div>
-                        </template>
-
-                        <div v-if="loading" class="tip-text">加载聊天记录..</div>
-                        <div v-if="finished && groupedContacts.length > 0" class="tip-text">已加载全部</div>
-                        <div v-if="groupedContacts.length === 0 && !loading" class="tip-text empty-tip">暂无联系人</div>
-                    </div>
+                <div class="pager-bar left-pager">
+                    <el-pagination
+                        small
+                        background
+                        layout="total, sizes, prev, pager, next, jumper"
+                        :page-sizes="[10, 20, 50]"
+                        :total="total"
+                        v-model:current-page="page"
+                        v-model:page-size="pageSize"
+                        @size-change="onSizeChange"
+                        @current-change="onPageChange"
+                    />
                 </div>
             </div>
-        </div>
 
-        <!-- 右侧聊天区域 -->
-        <div class="right-chat">
-            <div class="search-box">
-                <!-- <span class="search-label">搜索</span> -->
-                <div style="display: flex;width: 250px;height: 30px;">
-                    <el-input v-model="searchKey" placeholder="输入昵称/用户名搜索" clearable @input="refreshContacts"
-                        size="small" />
-                </div>
-            </div>
-            <div v-if="!currentChatId" class="chat-empty">请点击左侧联系人开始聊天</div>
-            <div v-else class="chat-content">
-                <!-- <div class="chat-title">当前聊天：{{ chatTargetName }}</div> -->
-                <div ref="chatListRef" class="chat-list">
-                    <div v-if="msgList.length === 0" class="empty-msg">暂无聊天记录</div>
+            <!-- 右侧聊天区域 -->
+            <div class="right-chat">
+                <div v-if="!currentChatId" class="chat-empty">请点击左侧联系人开始聊天</div>
+                <div v-else class="chat-content">
+                    <div ref="chatListRef" class="chat-list">
+                        <div v-if="msgList.length === 0" class="empty-msg">暂无聊天记录</div>
 
-                    <!-- 只循环一次，通过class区分左右 -->
-                    <div v-for="msg in msgList" :key="msg.id" class="msg-item"
-                        :class="msg.from_id === activeMainUserId ? 'right-msg' : 'left-msg'">
-                        <!-- 头像+昵称 -->
-                        <div class="user-info">
-                            <img class="msg-avatar"
-                                :src="msg.from_id === activeMainUserId ? baseURL + selfAvatar : baseURL + chatTargetAvatar"
-                                alt="" />
-                        </div>
-                        <!-- 消息内容或上传-->
-                        <div class="msg-box">
-                            <div class="nickname"
-                                :style="msg.from_id === activeMainUserId ? 'text-align: right;' : 'text-align: left'">
-                                {{ msg.from_id === activeMainUserId ? selfName : chatTargetName }}
+                        <!-- 只循环一次，通过class区分左右 -->
+                        <div
+                            v-for="msg in msgList"
+                            :key="msg.id"
+                            class="msg-item"
+                            :class="msg.from_id === activeMainUserId ? 'right-msg' : 'left-msg'"
+                        >
+                            <!-- 头像 -->
+                            <div class="user-info">
+                                <el-image
+                                    class="msg-avatar"
+                                    :src="msg.from_id === activeMainUserId ? baseURL + selfAvatar : baseURL + chatTargetAvatar"
+                                    fit="cover"
+                                />
                             </div>
-                            <div class="msg-text" v-if="msg.msg_type === 1">{{ msg.content }}</div>
-                            <div class="msg-img" v-else-if="msg.msg_type === 2">
-                                <img :src="baseURL + msg.content" alt="" />
-                            </div>
-                            <div class="msg-other" v-else-if="msg.msg_type === 3">【转账消息】{{ msg.content }}</div>
-                            <!-- <div class="msg-transfer" v-else-if="msg.msg_type === 4">【转账消息】</div>
-                            <div class="msg-card" v-else-if="msg.msg_type === 5">【约会卡设置</div> -->
-                            <div class="msg-video" v-else-if="msg.msg_type === 6">
-                                <video class="message-video" controls preload="metadata"
-                            loading="lazy">
-                            <source :src="baseURL + msg.content" type="video/mp4">
-                        </video>
-                            </div>
-                            <div class="msg-goods" v-else-if="msg.msg_type === 7">【商品消息】</div>
-                            <div class="msg-unknown" v-else>【未知消息】</div>
+                            <!-- 消息内容 -->
+                            <div class="msg-box">
+                                <div
+                                    class="nickname"
+                                    :style="msg.from_id === activeMainUserId ? 'text-align: right;' : 'text-align: left'"
+                                >
+                                    {{ msg.from_id === activeMainUserId ? selfName : chatTargetName }}
+                                </div>
+                                <div class="msg-text" v-if="msg.msg_type === 1">{{ msg.content }}</div>
+                                <div class="msg-img" v-else-if="msg.msg_type === 2">
+                                    <el-image
+                                        :src="baseURL + msg.content"
+                                        :preview-src-list="[baseURL + msg.content]"
+                                        fit="cover"
+                                        preview-teleported
+                                    />
+                                </div>
+                                <div class="msg-other" v-else-if="msg.msg_type === 3">【转账消息】{{ msg.content }}</div>
+                                <div class="msg-video" v-else-if="msg.msg_type === 6">
+                                    <video class="message-video" controls preload="metadata" loading="lazy">
+                                        <source :src="baseURL + msg.content" type="video/mp4">
+                                    </video>
+                                </div>
+                                <div class="msg-goods" v-else-if="msg.msg_type === 7">【商品消息】</div>
+                                <div class="msg-unknown" v-else>【未知消息】</div>
 
-                            <div class="msg-time">{{ moment(msg.create_time).format('YY/MM/DD HH:mm:ss') }}</div>
+                                <div class="msg-time">{{ moment(msg.create_time).format('YY/MM/DD HH:mm:ss') }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -113,338 +170,307 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted, watch, onActivated, nextTick, reactive } from "vue";
-import { useRoute } from "vue-router";
-import request from "@/utils/request";
-import moment from 'moment';
-const baseURL = request.defaults.baseURL || "";
-const route = useRoute();
-const userInfo = reactive(JSON.parse(localStorage.getItem("adminuser") || "{}"))
-const chatListRef = ref<HTMLDivElement | null>(null);
-const groupedContacts = ref<any[]>([]);
-const loading = ref(false);
-const finished = ref(false);
-const page = ref(1);
-const pageSize = ref(20);
-const searchKey = ref("");
-const scrollBox = ref<HTMLDivElement | null>(null);
-const currentChatId = ref<number | null>(null);
-const subLoading = ref<Record<number, boolean>>({});
+import { onMounted, onUnmounted, watch, onActivated, nextTick, reactive, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import type { TableInstance } from 'element-plus'
+import request from '@/utils/request'
+import moment from 'moment'
+import './admin-common.css'
 
-let socket: any = null;
-let hasBindScroll = false;
-const msgList = ref<any[]>([]);
-const activeMainUserId = ref<number | null>(null);
+interface AdminUser {
+    status?: number
+}
 
-// 聊天对方信息"
-const chatTargetName = ref("");
-const chatTargetAvatar = ref("");
-// 自身信息"
-const selfName = ref("");
-const selfAvatar = ref("");
+interface SubContact {
+    id: number
+    name: string
+    avatar: string
+    lastMsg: string
+    unread_count: number
+    timestamp: number
+}
+
+interface ContactGroup {
+    userId: number
+    name: string
+    avatar: string
+    last_msg_time?: string
+    expanded: boolean
+    subList: SubContact[]
+}
+
+interface ChatMsg {
+    id: number
+    from_id: number
+    msg_type: number
+    content: string
+    create_time: string | number
+}
+
+const { t } = useI18n()
+const baseURL: string = request.defaults.baseURL || ''
+const route = useRoute()
+const userInfo = reactive<AdminUser>(JSON.parse(localStorage.getItem('adminuser') || '{}'))
+
+const chatListRef = ref<HTMLDivElement | null>(null)
+const mainTableRef = ref<TableInstance | null>(null)
+const groupedContacts = ref<ContactGroup[]>([])
+const loading = ref(false)
+const page = ref(1)
+const pageSize = ref(20)
+const total = ref(0)
+const searchKey = ref('')
+const subLoading = ref<Record<number, boolean>>({})
+
+const msgList = ref<ChatMsg[]>([])
+const currentChatId = ref<number | null>(null)
+const activeMainUserId = ref<number | null>(null)
+
+// 聊天对方信息
+const chatTargetName = ref('')
+const chatTargetAvatar = ref('')
+// 自身信息
+const selfName = ref('')
+const selfAvatar = ref('')
+
+// 最后消息类型映射：[T]图片 [Z]转账 [Y]约会卡 [S]视频
+const formatLastMsg = (lastMsg: string) => {
+    return lastMsg === '[T]' ? t('image')
+        : lastMsg === '[Z]' ? t('transfer')
+            : lastMsg === '[Y]' ? t('card')
+                : lastMsg === '[S]' ? t('video')
+                    : lastMsg
+}
+
+const formatTime = (timestamp: number) => {
+    if (!timestamp) return ''
+    return moment(timestamp).format('YY/MM/DD HH:mm')
+}
+
+const subRowClass = ({ row }: { row: SubContact }) => {
+    return currentChatId.value === row.id ? 'current-chat-row' : ''
+}
 
 // 点击联系人切换聊天记录
 const toChat = async (friendId: number, mainId: number, name: string, avatar: string) => {
-    currentChatId.value = friendId;
-    activeMainUserId.value = mainId;
-    chatTargetName.value = name;
-    chatTargetAvatar.value = avatar;
+    currentChatId.value = friendId
+    activeMainUserId.value = mainId
+    chatTargetName.value = name
+    chatTargetAvatar.value = avatar
 
-    const group = groupedContacts.value.find(g => g.userId === mainId);
+    const group = groupedContacts.value.find(g => g.userId === mainId)
     if (group) {
-        selfName.value = group.name;
-        selfAvatar.value = group.avatar;
+        selfName.value = group.name
+        selfAvatar.value = group.avatar
     }
 
-    msgList.value = [];
+    msgList.value = []
     try {
         const { data: res } = await request.post('/api/admin/message/getMessageList', {
             mainUserId: mainId,
             friendId: friendId
-        });
+        })
         if (res.code === 1) {
-            msgList.value = res.data || [];
-            await nextTick();
+            msgList.value = res.data || []
+            await nextTick()
             if (chatListRef.value) {
-                chatListRef.value.scrollTop = chatListRef.value.scrollHeight;
+                chatListRef.value.scrollTop = chatListRef.value.scrollHeight
             }
         }
     } catch (err) {
-        console.error('加载聊天记录失败', err);
+        console.error('加载聊天记录失败', err)
     }
-};
+}
 
-// 展开/折叠分组（互斥：只允许一个分组展开始聊天
-const toggleGroup = async (userId: number) => {
-    const targetGroup = groupedContacts.value.find(g => g.userId === userId);
-    if (!targetGroup) return;
-
-    // 当前已展开，直接收貨地址
-    if (targetGroup.expanded) {
-        targetGroup.expanded = false;
-        return;
-    }
-
-    // 关闭所有其他分尊重您
-    groupedContacts.value.forEach(group => {
-        group.expanded = false;
-    });
-
-    // 展开当前分组'
-    targetGroup.expanded = true;
-
-    // 已有数据或正在加载，不再请求'
-    if (targetGroup.subList.length > 0 || subLoading.value[userId]) return;
-
-    subLoading.value[userId] = true;
+// 加载某个分组的二级会话列表
+const loadSubList = async (group: ContactGroup) => {
+    if (group.subList.length > 0 || subLoading.value[group.userId]) return
+    subLoading.value[group.userId] = true
     try {
-        const { data: res } = await request.post("/api/admin/message/getSubList", {
-            userId
-        });
+        const { data: res } = await request.post('/api/admin/message/getSubList', {
+            userId: group.userId
+        })
         if (res.code === 1) {
-            targetGroup.subList = res.data || [];
+            group.subList = res.data || []
         }
     } catch (err) {
-        console.error('加载二级列表失败：', err);
+        console.error('加载二级列表失败：', err)
     } finally {
-        subLoading.value[userId] = false;
+        subLoading.value[group.userId] = false
     }
-};
+}
 
+// 展开图标回调：互斥展开 + 懒加载二级列表
+const onExpandChange = (row: ContactGroup, expandedRows: ContactGroup[]) => {
+    const expanded = expandedRows.some(g => g.userId === row.userId)
+    if (!expanded) {
+        row.expanded = false
+        return
+    }
+    // 互斥：收起其他分组
+    groupedContacts.value.forEach(g => {
+        if (g.userId !== row.userId && g.expanded) {
+            g.expanded = false
+            mainTableRef.value?.toggleRowExpansion(g, false)
+        }
+    })
+    row.expanded = true
+    loadSubList(row)
+}
 
-// 加载一级分组列表失败'
+// 点击“查看会话”按钮：加载并展开
+const viewGroup = async (group: ContactGroup) => {
+    await loadSubList(group)
+    mainTableRef.value?.toggleRowExpansion(group, true)
+    group.expanded = true
+}
+
+// 加载一级分组列表（分页参数 page / limit 保持不变）
 const loadMore = async () => {
-    if (loading.value || finished.value) return;
-    loading.value = true;
-
+    if (loading.value) return
+    loading.value = true
     try {
-        const { data: res } = await request.post("/api/admin/message/adminlistadmin", {
+        const { data: res } = await request.post('/api/admin/message/adminlistadmin', {
             keyword: searchKey.value,
             page: page.value,
-            limit: pageSize.value,
-        });
+            limit: pageSize.value
+        })
         if (res.code === 1) {
-            const list = res.data || [];
-            const newGroups = list.map(item => ({
+            const list: Array<{ id: number; name: string; avatar: string; last_msg_time?: string }> = res.data || []
+            groupedContacts.value = list.map(item => ({
                 userId: item.id,
                 name: item.name,
                 avatar: item.avatar,
+                last_msg_time: item.last_msg_time,
                 expanded: false,
                 subList: []
-            }));
-            groupedContacts.value = page.value === 1 ? newGroups : [...groupedContacts.value, ...newGroups];
-            finished.value = list.length < pageSize.value;
-            if (!finished.value) page.value++;
+            }))
+            // 后端未返回总数，按本页条数推算：满页则认为还有下一页
+            if (list.length < pageSize.value) {
+                total.value = (page.value - 1) * pageSize.value + list.length
+            } else {
+                total.value = page.value * pageSize.value + 1
+            }
         } else {
-            finished.value = true;
+            groupedContacts.value = []
+            total.value = 0
         }
     } catch (err) {
-        console.error("加载一级列表失败：", err);
-        finished.value = true;
+        console.error('加载一级列表失败：', err)
+        groupedContacts.value = []
+        total.value = 0
     } finally {
-        loading.value = false;
+        loading.value = false
     }
-};
+}
 
-// 刷新所有列表失败
+// 刷新列表并清空当前聊天
 const refreshContacts = async () => {
-    page.value = 1;
-    finished.value = false;
-    groupedContacts.value = [];
-    subLoading.value = {};
-    msgList.value = [];
-    currentChatId.value = null;
-    activeMainUserId.value = null;
-    chatTargetName.value = "";
-    chatTargetAvatar.value = "";
-    selfName.value = "";
-    selfAvatar.value = "";
-    await nextTick();
-    loadMore();
-    if (scrollBox.value) scrollBox.value.scrollTop = 0;
-};
+    page.value = 1
+    subLoading.value = {}
+    msgList.value = []
+    currentChatId.value = null
+    activeMainUserId.value = null
+    chatTargetName.value = ''
+    chatTargetAvatar.value = ''
+    selfName.value = ''
+    selfAvatar.value = ''
+    await nextTick()
+    loadMore()
+}
 
-// 滚动加载"
-const handleScroll = () => {
-    const el = scrollBox.value;
-    if (!el || loading.value || finished.value) return;
-    const { scrollTop, scrollHeight, clientHeight } = el;
-    if (scrollTop + clientHeight >= scrollHeight - 50) {
-        loadMore();
-    }
-};
+const handleReset = () => {
+    searchKey.value = ''
+    refreshContacts()
+}
+
+const onSizeChange = () => {
+    page.value = 1
+    loadMore()
+}
+
+const onPageChange = () => {
+    loadMore()
+}
 
 watch(() => route.path, (newPath) => {
-    if (newPath === "/contacts") refreshContacts();
-});
+    if (newPath === '/contacts') refreshContacts()
+})
 
 onMounted(() => {
-    refreshContacts();
-    nextTick(() => {
-        if (!hasBindScroll && scrollBox.value) {
-            scrollBox.value.addEventListener("scroll", handleScroll);
-            hasBindScroll = true;
-        }
-    });
-});
+    refreshContacts()
+})
 
-onActivated(() => refreshContacts());
+onActivated(() => refreshContacts())
 
 onUnmounted(() => {
-    if (scrollBox.value) scrollBox.value.removeEventListener("scroll", handleScroll);
-    hasBindScroll = false;
-    if (socket) socket.disconnect();
-    window.removeEventListener("messageRead", refreshContacts);
-});
+    window.removeEventListener('messageRead', refreshContacts as EventListener)
+})
 </script>
 
 <style scoped>
-.left-contact {
-    width: 150px;
-    height: 100%;
-    border-right: 1px solid #eee;
-    flex-shrink: 0;
-}
-
-.right-chat {
-    flex: 1;
-    height: 100%;
-    padding: 0 15px;
-    overflow: hidden;
-}
-
-.search-box {
+.msg-page {
     display: flex;
+    flex-direction: column;
+    height: calc(100vh - 32px);
+}
+
+.msg-body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    gap: 14px;
+}
+
+/* 左侧联系人 */
+.left-contact {
+    width: 520px;
+    flex-shrink: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #eee;
+    border-radius: 6px;
     padding: 10px;
-    width: 250px;
-}
-
-.search-label {
-    font-size: 12px;
-    color: #666;
-}
-
-.top-title {
-    background-color: #e6e6e6;
-    width: 100%;
     box-sizing: border-box;
 }
 
-.title-text {
-    font-size: 14px;
-    font-weight: 700;
-    text-align: center;
-    padding: 5px 0;
-}
-
-.scroll-container {
-    flex: 1;
-    width: 100%;
-    height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.scroll-container:deep(::webkit-scrollbar) {
-    display: none;
-}
-
-.user-item {
-    display: flex;
-    align-items: center;
-    padding: 3px 6px;
-    border-bottom: 1px solid #f0f0f0;
-    cursor: pointer;
-}
-
-.user-item:hover {
-    background-color: #fcf2f2;
-}
-
-.user-item.active {
-    background-color: #ffd4fb;
-}
-
-.user-item.activeaa {
-    background-color: #f8b8f2;
-}
-
-.group-header {
-    justify-content: space-between;
-}
-
-.expand-icon {
-    font-size: 20px;
-    color: #fd0000;
+.left-filter {
+    margin-bottom: 10px;
     flex-shrink: 0;
 }
 
-.sub-list {
+.left-filter .el-input {
+    width: 180px;
+}
+
+.left-table {
+    flex: 1;
+    min-height: 0;
+}
+
+.left-pager {
+    margin-top: 10px;
+    flex-shrink: 0;
+    justify-content: center;
+}
+
+.sub-panel {
+    padding: 6px 10px;
     background: #fef5ff;
 }
 
-.sub-item {
-    padding-left: 26px;
-    font-size: 12px;
-
-    /* background-color: #dddddd; */
+.sub-panel :deep(.current-chat-row) {
+    background-color: #ffd4fb !important;
 }
 
-.avatar-wrap {
-    flex-shrink: 0;
-    margin-right: 6px;
-}
-
-.avatar {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    object-fit: cover;
-    background-color: #e0e0e0;
-}
-
-.avataraa {
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    object-fit: cover;
-    background-color: #e0e0e0;
-}
-
-.content-wrap {
+/* 右侧聊天区域 */
+.right-chat {
     flex: 1;
+    height: 100%;
     min-width: 0;
-    text-align: left;
-}
-
-.name {
-    font-size: 13px;
-    color: #333;
-    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
-    font-weight: 800;
-}
-
-.last-msg {
-    font-size: 11px;
-    color: #666;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.tip-text {
-    padding: 10px;
-    text-align: center;
-    font-size: 12px;
-    color: #777;
-}
-
-.empty-tip {
-    color: #666;
 }
 
 .chat-empty {
@@ -461,13 +487,6 @@ onUnmounted(() => {
     height: 100%;
     display: flex;
     flex-direction: column;
-}
-
-.chat-title {
-    font-size: 15px;
-    font-weight: 500;
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
 }
 
 .chat-list {
@@ -496,19 +515,14 @@ onUnmounted(() => {
     padding-right: 20px;
 }
 
-/* 对方消息 居左 */
 .left-msg {
     justify-content: flex-start;
 }
 
-/* 自己消息 居右 */
 .right-msg {
-    /* justify-content: flex-end; */
     flex-direction: row-reverse;
-
 }
 
-/* 头像+昵称 */
 .user-info {
     display: flex;
     flex-direction: row;
@@ -528,7 +542,6 @@ onUnmounted(() => {
     text-align: left;
 }
 
-/* 消息内容 */
 .msg-box {
     max-width: 60%;
 }
@@ -541,13 +554,11 @@ onUnmounted(() => {
     line-height: 1.5;
 }
 
-.msg-img img {
+.msg-img :deep(.el-image) {
     max-width: 180px;
     border-radius: 6px;
+    vertical-align: top;
 }
-
-.msg-transfer,
-.msg-card,
 
 .msg-goods,
 .msg-other,
@@ -558,9 +569,11 @@ onUnmounted(() => {
     font-size: 14px;
     color: #333;
 }
-.msg-video{
+
+.msg-video {
     border-radius: 6px;
 }
+
 .msg-time {
     font-size: 11px;
     color: #666;

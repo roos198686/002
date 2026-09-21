@@ -1,0 +1,196 @@
+/* ========== 管理后台通用样式（Element Plus 品红主题 #ff33ee） ========== */
+.admin-page {
+    padding: 16px;
+    color: #333;
+    box-sizing: border-box;
+    min-height: 100%;
+    background: #fff;
+}
+
+.admin-page .page-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin: 0 0 14px;
+}
+
+.admin-page .filter-bar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.admin-page .filter-bar .el-input,
+.admin-page .filter-bar .el-select {
+    width: 220px;
+}
+
+.admin-page .pager-bar {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 14px;
+}
+
+/* 表格 */
+.admin-page .el-table {
+    width: 100%;
+    font-size: 13px;
+}
+
+.admin-page .el-table th.el-table__cell {
+    background: #fdf2fe !important;
+    color: #333;
+    font-weight: bold;
+}
+
+.admin-page .el-table .cell {
+    line-height: 1.5;
+}
+
+/* 主按钮品红 */
+.admin-page .el-button--primary {
+    --el-button-bg-color: #ff33ee;
+    --el-button-border-color: #ff33ee;
+    --el-button-hover-bg-color: #ff5ff1;
+    --el-button-hover-border-color: #ff5ff1;
+    --el-button-active-bg-color: #e62ed6;
+    --el-button-active-border-color: #e62ed6;
+    color: #fff;
+}
+
+/* 分页选中品红 */
+.admin-page .el-pagination.is-background .el-pager li.is-active {
+    background-color: #ff33ee;
+}
+
+/* 标签页品红 */
+.admin-page .el-tabs__item.is-active {
+    color: #ff33ee;
+}
+
+.admin-page .el-tabs__active-bar {
+    background-color: #ff33ee;
+}
+
+.admin-page .el-tabs__item:hover {
+    color: #ff5ff1;
+}
+
+/* 开关品红 */
+.admin-page .el-switch.is-checked .el-switch__core {
+    border-color: #ff33ee;
+    background-color: #ff33ee;
+}
+
+/* 单选/复选选中品红 */
+.admin-page .el-radio__input.is-checked .el-radio__inner,
+.admin-page .el-checkbox__input.is-checked .el-checkbox__inner {
+    border-color: #ff33ee;
+    background: #ff33ee;
+}
+
+.admin-page .el-radio__input.is-checked + .el-radio__label,
+.admin-page .el-checkbox__input.is-checked + .el-checkbox__label {
+    color: #ff33ee;
+}
+
+/* 输入框聚焦品红 */
+.admin-page .el-input__wrapper.is-focus,
+.admin-page .el-select .el-input.is-focus .el-input__wrapper,
+.admin-page .el-textarea__inner:focus {
+    box-shadow: 0 0 0 1px #ff33ee inset !important;
+}
+
+/* 链接型操作文字 */.admin-page .op-link {
+    color: #ff33ee;
+    cursor: pointer;
+    margin: 0 6px;
+    font-size: 13px;
+}
+
+.admin-page .op-link.danger {
+    color: #ff4d4f;
+}
+
+.admin-page .op-link.disabled {
+    color: #bbb;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* 表格内缩略图 */
+.admin-page .thumb {
+    width: 46px;
+    height: 46px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid #eee;
+}
+
+.admin-page .thumb.small {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+}
+
+/* 弹窗主按钮（ElMessageBox 也走全局主色） */
+.el-message-box__btns .el-button--primary {
+    --el-button-bg-color: #ff33ee;
+    --el-button-border-color: #ff33ee;
+    --el-button-hover-bg-color: #ff5ff1;
+    --el-button-hover-border-color: #ff5ff1;
+    color: #fff;
+}
+
+/* 统计卡片 */
+.admin-page .stat-card {
+    flex: 1;
+    background: #fdf2fe;
+    border: 1px solid #ffc2f9;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+}
+
+.admin-page .stat-card .num {
+    font-size: 32px;
+    font-weight: bold;
+    color: #ff33ee;
+}
+
+.admin-page .stat-card .label {
+    margin-top: 6px;
+    color: #666;
+    font-size: 13px;
+}
+
+/* 图片网格（相册页） */
+.admin-page .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 12px;
+}
+
+.admin-page .photo-card {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.admin-page .photo-card .photo-img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+}
+
+.admin-page .photo-card .photo-meta {
+    padding: 6px 8px;
+    font-size: 12px;
+    color: #666;
+    line-height: 1.5;
+}

@@ -57,31 +57,36 @@
   font-size: 15px;
 }
 /* 路由切換過渡（前進滑入 / 右滑返回舊頁滑出） */
+/* iOS 風格卡片滑動：新頁從右側蓋入，下層頁縮放視差；返回時上層向右滑出 */
 .slide-forward-enter-active,
 .slide-forward-leave-active,
 .slide-back-enter-active,
 .slide-back-leave-active {
-  transition: transform 0.28s ease, opacity 0.28s ease;
+  transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: transform;
+  background: #fff;
 }
 .slide-forward-enter-active {
   z-index: 1100;
+  box-shadow: -6px 0 24px rgba(0, 0, 0, 0.12);
 }
 .slide-forward-enter-from {
   transform: translateX(100%);
 }
 .slide-forward-leave-to {
-  transform: translateX(-25%);
-  opacity: 0.6;
+  transform: translateX(-22%) scale(0.92);
+  transform-origin: left center;
 }
 .slide-back-leave-active {
   z-index: 1100;
+  box-shadow: -6px 0 24px rgba(0, 0, 0, 0.12);
 }
 .slide-back-leave-to {
   transform: translateX(100%);
 }
 .slide-back-enter-from {
-  transform: translateX(-25%);
-  opacity: 0.6;
+  transform: translateX(-22%) scale(0.92);
+  transform-origin: left center;
 }
 
 /* 顶部导航栏 */

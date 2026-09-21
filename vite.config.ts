@@ -31,19 +31,19 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:3000',  // 本机 Node 后端
+        target: 'http://127.0.0.1:3003',  // 本机 Node 后端
         changeOrigin: true,
         secure: false,
         configure: onProxyError
       },
       '/uploads': {
-        target: 'http://127.0.0.1:3000',  // 后端静态图片/文件
+        target: 'http://127.0.0.1:3003',  // 后端静态图片/文件
         changeOrigin: true,
         secure: false,
         configure: onProxyError
       },
       '/socket.io': {
-        target: 'http://127.0.0.1:3000',  // socket.io（含 websocket 升级）
+        target: 'http://127.0.0.1:3003',  // socket.io（含 websocket 升级）
         changeOrigin: true,
         ws: true,
         secure: false,

@@ -52,5 +52,9 @@ ios/App/SourcePackages/
 *.suo
 *.ntvs*
 *.njsproj
-*.sln
-*.sw?
+.sln
+.sw?
+
+# iOS 雲打包下載產物（僅本機留存）
+SKS-unsigned-IPA/
+SKS-unsigned-IPA.zip

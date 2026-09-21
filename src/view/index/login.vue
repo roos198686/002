@@ -211,7 +211,8 @@ const handleSubmit = async (): Promise<void> => {
             yesno.value = true
             localStorage.setItem("justLogin", "true")
             setTimeout(() => {
-                router.push('/index')
+                // replace：登錄成功後歷史記錄中不再保留登錄頁，返回不會回到登錄頁
+                router.replace('/index')
             }, 1200)
         } else if (res.code == 1) {
             showToast('用户不存在')

@@ -1,110 +1,130 @@
 <template>
-    <div class="maina">
-        <div class="all">
-            <div class="search-box">
-                <span class="search-label">输入用户名：</span>
-                <input v-model="searchName" placeholder="请输入用户名精确搜索" @input="handleSearch" class="input" />
-            </div>
+    <div class="admin-page">
+        <div class="page-title">资金管理（充值/提现记录）</div>
 
-            <div class="role-tabs">
-                <div class="tab-item" :class="{ active: logType === 2 }" @click="changeType(2)">充值记录</div>
-                <div class="tab-item" :class="{ active: logType === 1 }" @click="changeType(1)">提现记录</div>
-            </div>
-            <div ref="scrollWrap" class="user-table-wrap" @scroll="handleScroll">
-                <div class="role-tabsa">
-                    <div class="tab-itema" :class="{ active: status === 0 }" @click="changeStatus(0)">未完成</div>
-                    <div class="tab-itema" :class="{ active: status === 1 }" @click="changeStatus(1)">已完成</div>
-                </div>
-                <!-- 表头 -->
-                <div class="user-item"
-                    style="display: flex; align-items: center; padding: 5px 15px;background-color: #ff33ee;color: #fff;">
-                    <div class="user-info">
-                        <span style="width:18%">订单号</span>
-                        <span style="width:7%">用户ID</span>
-                        <span style="width:12%">用户ID</span>
-                        <span style="width:12%">金额</span>
-                        <span style="width:10%">币种</span>
-                        <span style="width:22%">钱包地址</span>
-                        <span style="width:16%">时间</span>
-                        <span style="width:10%">状态</span>
-                    </div>
-                    <div style="width:100px;font-size: 13px;">操作</div>
-                </div>
+        <!-- 充值 / 提现 切换 -->
+        <el-tabs v-model="logType" @tab-change="changeType">
+            <el-tab-pane label="充值记录" :name="2" />
+            <el-tab-pane label="提现记录" :name="1" />
+        </el-tabs>
 
-                <!-- 列表 -->
-                <div v-for="item in list" :key="item.id" class="user-item">
-                    <div class="user-info">
-                        <span style="width:18%">{{ item.order_no }}</span>
-                        <span style="width:7%">{{ item.user_id }}</span>
-                        <span style="width:12%">{{ item.username }}</span>
-                        <span style="width:12%">{{ item.amount }}</span>
-                        <span style="width:10%">{{ item.coin_type }}</span>
-                        <span style="width:22%">{{ item.wallet_address }}</span>
-                        <span style="width:16%">{{ moment(item.create_time).format('YY/MM/DD HH:mm:ss') }}</span>
-                        <span style="width:10%">{{ item.status === 0 ? '待处理' : item.status === 1 ? '已完理' : '已冻成'
-                        }}</span>
-                    </div>
-                    <div style="width:100px;display: flex;">
-                        <div >
-                            <!-- e这里自动区分 充值已确提现 调用不同接口 -->
-                            <div class="primary" v-if="item.status === 0" :style="userinfo.status != 3 ? '' : 'pointer-events: none;background-color: #555;'"
-                                @click="logType === 2 ? confirmRecharge(item.id) : confirmWithdraw(item.id)">
-                                确认完成
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div v-if="list.length === 0 && !loading" class="empty-tip">暂无记录</div>
-                <div v-else>
-                    <div v-if="loading" class="load-txt">加载中.....</div>
-                    <div v-if="noMore" class="load-txt">没有更多了</div>
-                </div>
-            </div>
+        <!-- 顶部筛选栏 -->
+        <div class="filter-bar">
+            <el-input
+                v-model="searchName"
+                placeholder="请输入用户名精确搜索"
+                clearable
+                style="width: 240px"
+                @keyup.enter="handleSearch"
+            />
+            <el-select v-model="status" style="width: 140px" @change="changeStatus">
+                <el-option label="未完成" :value="0" />
+                <el-option label="已完成" :value="1" />
+            </el-select>
+            <el-button type="primary" @click="handleSearch">搜索</el-button>
+            <el-button @click="handleReset">重置</el-button>
         </div>
-        <!-- 提示 -->
-        <div class="copy-toast" v-if="showToast">
-            <div style="font-size:30px;">
-                <Icon icon="iconoir:xmark" width="58" v-if="!yesno" />
-                <Icon icon="iconoir:check" width="58" v-else />
-            </div>
-            <div style="font-size:16px; margin-top:10px;">{{ showtext }}</div>
+
+        <!-- 记录表格 -->
+        <el-table :data="list" border stripe v-loading="loading" style="width: 100%">
+            <el-table-column prop="order_no" label="订单号" min-width="180" show-overflow-tooltip />
+            <el-table-column prop="user_id" label="用户ID" width="90" align="center" />
+            <el-table-column prop="username" label="用户名" width="130" show-overflow-tooltip />
+            <el-table-column label="金额" width="120" align="right">
+                <template #default="{ row }">{{ formatMoney(row.amount) }}</template>
+            </el-table-column>
+            <el-table-column prop="coin_type" label="币种" width="90" align="center" />
+            <el-table-column prop="wallet_address" label="钱包地址" min-width="200" show-overflow-tooltip />
+            <el-table-column label="时间" width="160" align="center">
+                <template #default="{ row }">{{ moment(row.create_time).format('YY/MM/DD HH:mm:ss') }}</template>
+            </el-table-column>
+            <el-table-column label="状态" width="100" align="center">
+                <template #default="{ row }">
+                    <el-tag v-if="row.status === 0" type="warning">待处理</el-tag>
+                    <el-tag v-else-if="row.status === 1" type="success">已完成</el-tag>
+                    <el-tag v-else type="info">已冻结</el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column label="操作" width="110" align="center" fixed="right">
+                <template #default="{ row }">
+                    <el-button
+                        size="small"
+                        type="primary"
+                        :disabled="row.status !== 0 || userInfo.status === 3"
+                        @click="logType === 2 ? confirmRecharge(row.id) : confirmWithdraw(row.id)"
+                    >
+                        确认完成
+                    </el-button>
+                </template>
+            </el-table-column>
+            <template #empty>暂无记录</template>
+        </el-table>
+
+        <!-- 分页器：列表接口服务端分页；搜索接口一次返回全量，不展示分页器 -->
+        <div v-if="!isSearchMode" class="pager-bar">
+            <el-pagination
+                background
+                layout="total, sizes, prev, pager, next, jumper"
+                :page-sizes="[10, 20, 50]"
+                :total="total"
+                v-model:current-page="page"
+                v-model:page-size="pageSize"
+                @size-change="onSizeChange"
+                @current-change="onPageChange"
+            />
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
 import { onMounted, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import request from '@/utils/request'
-import router from '@/router'
-import moment from 'moment';
-import { Icon } from '@iconify/vue';
-const showToast = ref(false);
-const showtext = ref('');
-const yesno = ref(false);
-const searchName = ref('')
-const logType = ref(2) // 1=提现 2=充值已确'
-const status = ref(0)
+import moment from 'moment'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import './admin-common.css'
 
-const list = ref<any[]>([])
-const scrollWrap = ref<HTMLDivElement | null>(null)
-
-const page = ref(1)
-const pageSize = 20
-const loading = ref(false)
-const noMore = ref(false)
-
-const resetPage = () => {
-    page.value = 1
-    list.value = []
-    noMore.value = false
+interface AdminUser {
+    status?: number
+    group_level?: number | string
 }
-const userInfo = reactive(JSON.parse(localStorage.getItem("adminuser") || "{}"));
-const getList = async () => {
 
+interface FundRecord {
+    id: number
+    order_no: string
+    user_id: number
+    username: string
+    amount: number | string
+    coin_type: string
+    wallet_address: string
+    create_time: string | number
+    status: number
+}
+
+const router = useRouter()
+const userInfo = reactive<AdminUser>(JSON.parse(localStorage.getItem('adminuser') || '{}'))
+
+const searchName = ref('')
+const logType = ref<number>(2) // 1=提现 2=充值
+const status = ref<number>(0)
+
+const list = ref<FundRecord[]>([])
+const loading = ref(false)
+
+// 服务端分页（后端未返回总数，按本页条数推算：满页则认为还有下一页）
+const page = ref(1)
+const pageSize = ref(20)
+const total = ref(0)
+const isSearchMode = ref(false)
+
+const formatMoney = (val: number | string) => {
+    const num = Number(val || 0)
+    return isNaN(num) ? '0.00' : num.toFixed(2)
+}
+
+const getList = async () => {
     const statusat = userInfo.status
     const remark = userInfo.group_level
-    console.log(statusat, remark)
-    if (loading.value || noMore.value) return
     loading.value = true
     try {
         const res = await request.get('/api/admin/publiczl/listAll', {
@@ -112,44 +132,55 @@ const getList = async () => {
                 type: logType.value,
                 status: status.value,
                 page: page.value,
-                limit: pageSize,
-                statusat: statusat,
-                remark: remark
+                limit: pageSize.value,
+                statusat,
+                remark
             }
         })
-        const arr = res.data.data || []
-        console.log(arr)
-        list.value = [...list.value, ...arr]
-        if (arr.length < pageSize) noMore.value = true
-        page.value++
+        const arr: FundRecord[] = res.data.data || []
+        list.value = arr
+        if (arr.length < pageSize.value) {
+            total.value = (page.value - 1) * pageSize.value + arr.length
+        } else {
+            total.value = page.value * pageSize.value + 1
+        }
+        isSearchMode.value = false
     } catch (err) {
         console.log(err)
+        ElMessage.error('获取记录失败')
     } finally {
         loading.value = false
     }
 }
 
-const handleScroll = () => {
-    if (!scrollWrap.value) return
-    const { scrollTop, scrollHeight, clientHeight } = scrollWrap.value
-    if (scrollHeight - scrollTop - clientHeight < 80) getList()
-}
-
-const changeType = (val: number) => {
-    logType.value = val
-    resetPage()
+const reloadFirstPage = () => {
+    page.value = 1
     getList()
 }
 
-const changeStatus = (val: number) => {
-    status.value = val
-    resetPage()
+const changeType = () => {
+    reloadFirstPage()
+}
+
+const changeStatus = () => {
+    reloadFirstPage()
+}
+
+const onSizeChange = () => {
+    page.value = 1
+    getList()
+}
+
+const onPageChange = () => {
     getList()
 }
 
 const handleSearch = () => {
-    resetPage()
-    if (!searchName.value) return getList()
+    if (!searchName.value) {
+        reloadFirstPage()
+        return
+    }
+    loading.value = true
     request.get('/api/admin/publiczl/search', {
         params: {
             username: searchName.value,
@@ -158,203 +189,70 @@ const handleSearch = () => {
         }
     }).then(res => {
         list.value = res.data.data || []
+        isSearchMode.value = true
+    }).catch(err => {
+        console.log(err)
+        ElMessage.error('搜索失败')
+    }).finally(() => {
+        loading.value = false
     })
 }
 
-// ==============================================
-// �?【充值确认】接口（logType=2U.j
-const confirmRecharge = async (id: number) => {
-    await request.post('/api/admin/publiczl/confirmRecharge', { id })
-    resetPage()
-    getList()
-    showtext.value = '充值已确认完成';
-    yesno.value = true;
-    showToast.value = true;
-    setTimeout(() => showToast.value = false, 1500);
+const handleReset = () => {
+    searchName.value = ''
+    reloadFirstPage()
 }
 
-// px【提现确认】接口（logType=1h.j
-const confirmWithdraw = async (id: number) => {
-    await request.post('/api/admin/publiczl/confirmWithdraw', { id })
-    resetPage()
-    getList()
-    showtext.value = '提现已确认完成';
-    yesno.value = true;
-    showToast.value = true;
-    setTimeout(() => showToast.value = false, 1500);
+// 【充值确认】接口（logType=2）
+const confirmRecharge = async (id: number) => {
+    try {
+        await ElMessageBox.confirm('确认该笔充值已完成吗？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        })
+    } catch {
+        return
+    }
+    try {
+        await request.post('/api/admin/publiczl/confirmRecharge', { id })
+        ElMessage.success('充值已确认完成')
+        reloadFirstPage()
+    } catch (err) {
+        console.log(err)
+        ElMessage.error('操作失败')
+    }
 }
-// ==============================================
+
+// 【提现确认】接口（logType=1）
+const confirmWithdraw = async (id: number) => {
+    try {
+        await ElMessageBox.confirm('确认该笔提现已完成吗？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        })
+    } catch {
+        return
+    }
+    try {
+        await request.post('/api/admin/publiczl/confirmWithdraw', { id })
+        ElMessage.success('提现已确认完成')
+        reloadFirstPage()
+    } catch (err) {
+        console.log(err)
+        ElMessage.error('操作失败')
+    }
+}
 
 onMounted(() => {
-
-    const adminStr = localStorage.getItem('adminuser');
-
+    const adminStr = localStorage.getItem('adminuser')
     if (!adminStr) {
-        router.replace('/admin_login');
+        router.replace('/admin_login')
     }
     getList()
 })
 </script>
 
 <style scoped>
-.user-item {
-    display: flex;
-    text-align: left;
-    padding: 6px 15px;
-    border-bottom: 1px solid #eee;
-}
-
-.user-info {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    font-size: 13px;
-}
-
-.user-info span {
-    overflow: hidden;
-    white-space: nowrap;
-    font-size: 13px;
-}
-
-.maina {
-    padding: 20px;
-}
-
-.search-box {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin-bottom: 15px;
-}
-
-.search-label {
-    white-space: nowrap;
-    font-size: 13px;
-}
-
-.search-box :deep(.input) {
-    width: 260px;
-}
-
-.role-tabs {
-    display: flex;
-    gap: 10px;
-}
-
-.role-tabsa {
-    display: flex;
-    border-radius: 6px 6px 0 0;
-    padding: 3px 0;
-}
-
-.tab-item {
-    padding: 2px 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 13px;
-}
-
-.tab-item:hover {
-    background: #fcebfc;
-}
-
-.tab-item.active {
-    background: #ff33ee;
-    color: #333;
-    border-color: #ff33ee;
-}
-
-
-.tab-itema {
-    margin: 3px 16px;
-    cursor: pointer;
-    font-size: 13px;
-    color: #3f3f3f;
-}
-
-.tab-itema:hover {
-    color: #ff33ee;
-}
-
-.tab-itema.active {
-    color: #ff33ee;
-    font-weight: bold;
-    border-bottom: 3px solid #ff33ee;
-}
-
-.user-table-wrap {
-    border: 1px solid #eee;
-    border-radius: 6px;
-    max-height: 600px;
-    overflow-y: auto;
-    margin-top: 15px;
-}
-
-.user-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 15px;
-    border-bottom: 1px solid #d3d2d2;
-    background: #eeeeee;
-}
-
-.user-info {
-    display: flex;
-    gap: 18px;
-    font-size: 14px;
-}
-
-.primary {
-    background-color: #02804b;
-    color: #fff;
-    padding: 2px 10px;
-    border-radius: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    font-size: 13px;
-}
-
-.empty-tip,
-.load-txt {
-    text-align: center;
-    padding: 30px 0;
-    color: #666;
-    font-size: 13px;
-}
-
-.user-table-wrap::-webkit-scrollbar {
-    display: none;
-}
-
-/* 弹窗 */
-.copy-toast {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(46, 46, 46, 0.8);
-    color: #333;
-    padding: 20px;
-    border-radius: 8px;
-    z-index: 9999;
-    min-width: 250px;
-}
-
-:global(.input) {
-    border: 1px solid #ccc;
-    padding: 5px;
-    border-radius: 4px;
-    outline: none;
-}
-
-:global(.input:focus) {
-    border: 1px solid #ccc;
-    /* 强制提权，覆盖全局样式 */
-    /* border-color: #ff33ee !important; */
-}
 </style>

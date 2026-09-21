@@ -12,7 +12,7 @@
                 </div>
 
                 <!-- 内容区域 -->
-                <div class="content-wrapper" ref="scrollWrap" @scroll="handleScroll" @touchstart="handleTouchStart"
+                <div class="content-wrapper" ref="scrollWrap" data-scroll-cache @scroll="handleScroll" @touchstart="handleTouchStart"
                     @touchmove="handleTouchMove" @touchend="handleTouchEnd" @scrollend="onScrollEnd">
                     <!-- 搜索好友：-->
                     <div class="search-box-wrap">
@@ -216,7 +216,10 @@ import router from '../../../router';
 import request from '@/utils/request';
 import moment from 'moment';
 import { useDynamicStore } from '@/stores/dynamic'
+import { useScrollCache } from '@/composables/useScrollCache'
 const dynamicStore = useDynamicStore()
+// 返回本頁時恢復滾動位置
+useScrollCache()
 const baseURL = request.defaults.baseURL || '';
 // 圖片載入失敗兜底�?
 const defaultImg = `${baseURL}/static/default.png`;

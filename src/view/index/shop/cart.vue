@@ -11,7 +11,7 @@
                 </div>
 
                 <!-- 内容或上传-->
-                <div class="content-wrapper" id="cartScroll">
+                <div class="content-wrapper" id="cartScroll" data-scroll-cache>
                     <div class="cuekdil">
                         <div class="cart-list-wrap">
                             <!-- 购物车商品-->
@@ -181,6 +181,10 @@ import { onMounted, ref, computed } from 'vue';
 import router from '../../../router';
 import { Icon } from '@iconify/vue';
 import request from '@/utils/request';
+import { useScrollCache } from '@/composables/useScrollCache'
+
+defineOptions({ name: 'CartList' })
+useScrollCache()
 
 const baseURL = request.defaults.baseURL || '';
 const cartList = ref<any[]>([]);
