@@ -50,7 +50,7 @@
         </div>
 
         <div class="copy-toastas" v-if="zuzjkdsoa">
-            <div style="font-size: 30px;width: 100%;height: 150px;color:#333; display: flex;background-color: #792975;align-items: center;border-bottom-left-radius: 60% 40px;
+            <div style="font-size: 30px;width: 100%;height: 150px;color:#fff; display: flex;background-color: #f708af;align-items: center;border-bottom-left-radius: 60% 40px;
     border-bottom-right-radius: 60% 40px;">
                 <div style="height: 60px;width:15%;margin-left: 20px;">
                     <img :src="vakdilsog == 100 ? imagea : vakdilsog == 300 ? imageb : imagec"
@@ -338,7 +338,7 @@ onMounted(() => {
     padding: 8px;
     border-radius: 7px;
     text-align: center;
-    color: #333;
+    color: #fff;
     flex: 1;
 }
 
@@ -347,7 +347,7 @@ onMounted(() => {
     padding: 8px;
     border-radius: 7px;
     text-align: center;
-    color: #333;
+    color: #fff;
     flex: 1;
 }
 

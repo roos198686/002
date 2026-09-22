@@ -4,7 +4,7 @@
             <div class="register-all">
                 <!-- 頂部標題 -->
                 <div class="allar-top">
-                    <div @click="goBack" style="margin-left: 10px;cursor: pointer;color: #a88035;width: 30px;">
+                    <div @click="goBack" style="margin-left: 10px;cursor: pointer;color: #000;width: 30px;">
                         <Icon icon="material-symbols:arrow-back-ios-rounded" width="18" />
                     </div>
                     <div class="allar-top-a">新增提款帳戶</div>
@@ -177,7 +177,7 @@ const submit = async () => {
 .allar-top-a {
     font-size: 15px;
     font-weight: bold;
-    color: #8a6520;
+    color: #000;
     text-align: center;
     width: 100%;
     margin-right: 40px;
@@ -248,23 +248,24 @@ select.form-input {
 }
 
 .texta {
-    color: #e390fc;
+    color: #999;
     text-align: left;
     font-size: 12px;
 }
 
 .textbutt {
     margin-top: 50px;
-    background: linear-gradient(360deg, #ff33ee, #eda5fc);
+    background-color: #032de6;
     text-align: center;
     border-radius: 50px;
     padding: 8px 15px;
     font-weight: 900;
     cursor: pointer;
+    color: #fff;
 }
 
 .textbutt:hover {
-    background: linear-gradient(360deg, #b147bb, #eda5fc);
+    background-color: #3d5ef5;
 }
 
 .copy-toast {

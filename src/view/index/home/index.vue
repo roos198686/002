@@ -1406,7 +1406,7 @@ onUnmounted(() => {
     padding: 5px 15px;
     font-size: 14px;
     border-radius: 4px;
-    color: #333;
+    color: #fff;
     cursor: pointer;
     text-align: center;
 }
@@ -1415,7 +1415,7 @@ onUnmounted(() => {
     pointer-events: none;
     cursor: not-allowed;
     opacity: 0.6;
-    color: #666;
+    color: #fff;
 }
 
 .upload-btn-wrap {

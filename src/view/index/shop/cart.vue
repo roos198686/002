@@ -665,7 +665,7 @@ onMounted(async () => {
     padding: 20px;
 }
 .recommend-title {
-    color:#333;
+    color:#333333;
     font-size:14px;
     font-weight:bold;
     margin-bottom:10px;

@@ -309,7 +309,7 @@ onMounted(() => {
     background-color: #fff;
     margin: 10px;
     border-radius: 6px;
-    box-shadow: 0 0 1px 1px rgba(90, 90, 90, 0.349);
+    box-shadow: 0 0 1px 1px rgba(184, 183, 183, 0.349);
 }
 
 .brislidlista {

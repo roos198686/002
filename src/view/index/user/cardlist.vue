@@ -4,7 +4,7 @@
             <div class="register-all">
                 <!-- 頂部標題 -->
                 <div class="allar-top">
-                    <div @click="goBack" style="margin-left: 10px; cursor: pointer; color: #a88035; width: 30px;">
+                    <div @click="goBack" style="margin-left: 10px; cursor: pointer; color: #000; width: 30px;">
                         <Icon icon="material-symbols:arrow-back-ios-rounded" width="18" />
                     </div>
                     <div class="allar-top-a">我的提款帳戶</div>
@@ -161,7 +161,7 @@ watch(() => route.path, () => {
 .allar-top-a {
     font-size: 15px;
     font-weight: bold;
-    color: #8a6520;
+    color: #000;
     text-align: center;
     width: 100%;
     margin-right: 40px;
@@ -211,9 +211,9 @@ watch(() => route.path, () => {
   box-shadow: 0 0 1px 1px rgb(37, 37, 37);
 }
 .cardlist-add {
-  background: linear-gradient(360deg, #ff33ee, #eda5fc);
+  background-color: #032de6;
   padding: 7px;
-  color: #000;
+  color: #fff;
   border-radius: 50px;
   text-align: center;
   cursor: pointer;

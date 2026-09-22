@@ -59,7 +59,7 @@
 
                         <!-- 推荐商品 -->
                         <div style="margin-top:30px;padding-top:10px;">
-                            <div style="color:#333; font-size:14px; font-weight:bold; margin-bottom:10px;padding-left:5px;">
+                            <div style="color:#333; font-size:14px; font-weight:bold; margin-bottom:10px;text-align: center;">
                                 為你推薦
                             </div>
                             <div class="waterfall-box">

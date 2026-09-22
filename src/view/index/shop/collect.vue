@@ -67,7 +67,7 @@
 
                         <!-- 为你推荐 -->
                         <div style="padding:10px 5px;">
-                            <div style="color:#333; font-size:14px; font-weight:bold; margin-bottom:10px;padding-left:5px;">
+                            <div style="color:#333; font-size:14px; font-weight:bold; margin-bottom:10px;text-align: center;">
                                 為你推薦
                             </div>
                             <div class="waterfall-box">
@@ -299,10 +299,11 @@ onMounted(() => {
 .cart-item {
     display: flex;
     align-items: center;
-    background: #f0f0f0;
+    background: #fcfcfc;
     border-radius: 8px;
     padding: 14px;
     margin-bottom: 5px;
+    border: 1px solid #e0e0e0;
 }
 
 
@@ -414,7 +415,6 @@ onMounted(() => {
 }
 
 .waterfall-item-all {
-    background: #e8e8e8;
     border-radius: 6px;
     overflow: hidden;
 }

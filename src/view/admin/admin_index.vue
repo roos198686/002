@@ -9,7 +9,7 @@
 
             <div class="allar-top-a">
                 <div class="topone">
-                    <div class="lksfokof-all-texta">欢迎使用管理后台系统</div>
+                    <div class="lksfokof-all-texta">管理后台</div>
                     <div class="lksfokof-all-textb">
                         <div class="lksfokof-all-textb-a">登录用户： {{ userInfo.username }}</div>
                         <div class="lksfokof-all-textb-a">
@@ -71,7 +71,7 @@
                             <div style="width: 100%;">
                                 <div
                                     style=" display: flex; justify-content: space-between; align-items: center;margin-bottom: 15px; ">
-                                    <div style=" font-size: 15px; font-weight: bold;color: #ff33ee;">
+                                    <div style=" font-size: 15px; font-weight: bold;color: #000;">
                                         钱包列表
                                     </div>
                                     <el-button type="primary" size="small" @click="showAddModal = true"
@@ -82,7 +82,7 @@
 
                                 <el-table :data="walletList" v-loading="loading" border stripe class="wallet-table">
                                     <el-table-column prop="coin_type" label="币种类型" align="center" />
-                                    <el-table-column prop="address" label="钱包地址" align="center"
+                                    <el-table-column prop="address" label="钱包地址" align="center" 
                                         show-overflow-tooltip>
                                         <template #default="{ row }">
                                             <span style="font-family: monospace">{{ row.address }}</span>
@@ -95,10 +95,10 @@
                                             </el-tag>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column label="已完成提现笔数" align="center">
+                                    <el-table-column label="完成提现数" align="center">
                                         <template #default="{ row }">{{ row.withdrawCount || 0 }}</template>
                                     </el-table-column>
-                                    <el-table-column label="总充值金额" align="center">
+                                    <el-table-column label="充值金额" align="center">
                                         <template #default="{ row }" class="amount-cell">
                                             <span style="color:#ff33ee;font-weight:bold">
                                                 {{ row.totalRecharge ? Number(row.totalRecharge).toFixed(2) : '0.00' }}
@@ -536,6 +536,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
+
 .topone {
     display: flex;
     flex-direction: row;
@@ -552,7 +553,6 @@ onMounted(() => {
     bottom: 0;
     font-family: "Consolas";
     overflow-y: hidden;
-    color: #b2ecf7;
 }
 
 .allar-top {
@@ -571,7 +571,7 @@ onMounted(() => {
     display: none;
     font-size: 24px;
     cursor: pointer;
-    color: #ff33ee;
+    color: #000;
     margin-right: 10px;
 }
 
@@ -579,7 +579,7 @@ onMounted(() => {
     margin: 0 15px;
     font-size: 18px;
     font-weight: bold;
-    color: #ff33ee;
+    color: #000;
     width: 100%;
 }
 
@@ -608,7 +608,7 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     width: 80px;
-    background-color: #ff33ee;
+    background-color: #4e1c4a;
 }
 
 .allal-top-b {
@@ -629,7 +629,7 @@ onMounted(() => {
     align-items: center;
     justify-content: center;
     background-color: #e7e7e7;
-    border-bottom: 1px solid #b67676;
+    border-bottom: 1px solid #888888;
 }
 
 .allal-top-ba:hover {
@@ -640,10 +640,10 @@ onMounted(() => {
 .allal-top-babutt {
     width: 100%;
     height: 60px;
-    background-color: #ff33ee;
+    background-color: #77096e;
     cursor: pointer;
     font-size: 13px;
-    color: #333;
+    color: #fff;
     pointer-events: none;
 }
 
@@ -671,7 +671,7 @@ onMounted(() => {
 }
 
 :deep(.wallet-table th.el-table__cell) {
-    background: #fdf2fe;
+    background: #f5f5f5;
     color: #333;
 }
 
@@ -680,13 +680,13 @@ onMounted(() => {
     text-align: right;
     font-size: 14px;
     font-weight: bold;
-    color: #ff33ee;
+    color: #00115f;
 }
 
 .lksfokof-all-texta {
     font-size: 22px;
     font-weight: bold;
-    color: #ff33ee;
+    color: #000;
 }
 
 .lksfokof-all-textb {
@@ -751,7 +751,7 @@ onMounted(() => {
 .menu-title {
     font-size: 16px;
     font-weight: bold;
-    color: #ff33ee;
+    color: #00115f;
     text-align: center;
     padding: 10px 0 20px;
     border-bottom: 1px solid #eee;
@@ -771,12 +771,12 @@ onMounted(() => {
 }
 
 .mobile-menu-active {
-    background: #ff33ee;
-    color: #333;
+    background: #4b0345;
+    color: #fff;
 }
 
 .mobile-menu-active:hover {
-    background: #ff33ee;
+    background: #63085b;
 }
 
 /* 媒体查询：手机端 历史失80px */

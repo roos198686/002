@@ -10,13 +10,8 @@
 
         <!-- 顶部筛选栏 -->
         <div class="filter-bar">
-            <el-input
-                v-model="searchName"
-                placeholder="请输入用户名精确搜索"
-                clearable
-                style="width: 240px"
-                @keyup.enter="handleSearch"
-            />
+            <el-input v-model="searchName" placeholder="请输入用户名精确搜索" clearable style="width: 240px"
+                @keyup.enter="handleSearch" />
             <el-select v-model="status" style="width: 140px" @change="changeStatus">
                 <el-option label="未完成" :value="0" />
                 <el-option label="已完成" :value="1" />
@@ -33,7 +28,7 @@
             <el-table-column label="金额" width="120" align="right">
                 <template #default="{ row }">{{ formatMoney(row.amount) }}</template>
             </el-table-column>
-            <el-table-column prop="coin_type" label="币种" width="90" align="center" />
+            <el-table-column prop="coin_type" label="币种" width="110" align="center" />
             <el-table-column prop="wallet_address" label="钱包地址" min-width="200" show-overflow-tooltip />
             <el-table-column label="时间" width="160" align="center">
                 <template #default="{ row }">{{ moment(row.create_time).format('YY/MM/DD HH:mm:ss') }}</template>
@@ -47,12 +42,8 @@
             </el-table-column>
             <el-table-column label="操作" width="110" align="center" fixed="right">
                 <template #default="{ row }">
-                    <el-button
-                        size="small"
-                        type="primary"
-                        :disabled="row.status !== 0 || userInfo.status === 3"
-                        @click="logType === 2 ? confirmRecharge(row.id) : confirmWithdraw(row.id)"
-                    >
+                    <el-button size="small" type="primary" :disabled="row.status !== 0 || userInfo.status === 3"
+                        @click="logType === 2 ? confirmRecharge(row.id) : confirmWithdraw(row.id)">
                         确认完成
                     </el-button>
                 </template>
@@ -62,16 +53,9 @@
 
         <!-- 分页器：列表接口服务端分页；搜索接口一次返回全量，不展示分页器 -->
         <div v-if="!isSearchMode" class="pager-bar">
-            <el-pagination
-                background
-                layout="total, sizes, prev, pager, next, jumper"
-                :page-sizes="[10, 20, 50]"
-                :total="total"
-                v-model:current-page="page"
-                v-model:page-size="pageSize"
-                @size-change="onSizeChange"
-                @current-change="onPageChange"
-            />
+            <el-pagination background layout="total, sizes, prev, pager, next, jumper" :page-sizes="[10, 20, 50]"
+                :total="total" v-model:current-page="page" v-model:page-size="pageSize" @size-change="onSizeChange"
+                @current-change="onPageChange" />
         </div>
     </div>
 </template>
@@ -254,5 +238,4 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

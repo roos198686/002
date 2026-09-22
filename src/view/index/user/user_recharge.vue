@@ -303,9 +303,9 @@ onMounted(() => {
 }
 
 .buttallone {
-    background-color: #fcabf8;
+    background-color: #fad7f8;
     border-radius: 20px;
-    padding: 80px 20px 10px 20px;
+    padding: 100px 20px 30px 20px;
     font-size: 14px;
     font-weight: 900;
     color: #000;

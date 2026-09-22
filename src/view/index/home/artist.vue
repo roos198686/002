@@ -906,6 +906,7 @@ onMounted(() => {
     background-color: #2222229c;
     border-radius: 5px;
     height: 30px;
+    margin-left: 15px;
 }
 
 .cuekdil {
