@@ -67,7 +67,7 @@
 
                         <!-- 为你推荐 -->
                         <div style="padding:10px 0;margin-top:10px;">
-                            <div style="color:#333; font-size:14px; font-weight:bold; margin-bottom:10px;">
+                            <div style="color:#333; font-size:14px; font-weight:bold; margin-bottom:10px;text-align: center;">
                                 為你推薦
                             </div>
                             <div class="waterfall-box">
@@ -415,7 +415,7 @@ watch(() => route.path, () => { }, { immediate: true });
 }
 
 .order-item {
-    background: #e8e8e8;
+    background: #f7f7f7;
     padding: 18px;
     margin-bottom: 4px;
     border-radius: 6px;
@@ -484,7 +484,7 @@ watch(() => route.path, () => { }, { immediate: true });
 .pay-btn {
     display: inline-block;
     background: #f15bff;
-    color: #000;
+    color: #fff;
     font-size: 13px;
     padding: 3px 10px;
     border-radius: 5px;
@@ -506,7 +506,7 @@ watch(() => route.path, () => { }, { immediate: true });
 }
 
 .waterfall-item-all {
-    background: #e8e8e8;
+    background: #f3f3f3;
     border-radius: 6px;
     overflow: hidden;
 }

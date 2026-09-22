@@ -103,7 +103,7 @@
                 </div>
                 <!-- 推荐商品 -->
                 <div class="recommend-wrap" id="recommend-area">
-                    <div class="recommend-title">為你推薦</div>
+                    <div class="recommend-title" style="text-align: center;">為你推薦</div>
                     <div class="waterfall-box">
                         <div class="waterfall-item" v-for="item in showList" :key="item.id" @click="toDetail(item.id)">
                             <div class="waterfall-item-all">
@@ -229,8 +229,8 @@
                             <span class="pay-money">{{ data.price * num }}</span>
                         </div>
                         <div class="pwd-input-wrap">
-                            <div class="pwd-label">請輸入支付密碼</div>
-                            <input v-model="payPwd" type="password" placeholder="請輸入支付密碼" class="pwd-input" />
+                            <div class="pwd-label">請輸入支付密碼（6位數字）</div>
+                            <PinInput v-model="payPwd" />
                         </div>
                         <div class="popup-submit" @click="submitPay">確認付款 ${{ data.price * num }}</div>
                     </div>
@@ -247,12 +247,12 @@
                     <div class="setpwd-content">
                         <div class="pay-title">設定支付密碼</div>
                         <div class="input-row">
-                            <div class="pwd-label">支付密碼</div>
-                            <input v-model="newPwd" type="password" placeholder="請輸入支付密碼" class="pwd-input" />
+                            <div class="pwd-label">支付密碼（6位數字）</div>
+                            <PinInput v-model="newPwd" />
                         </div>
                         <div class="input-row">
                             <div class="pwd-label">確認密碼</div>
-                            <input v-model="confirmPwd" type="password" placeholder="請再次輸入密碼" class="pwd-input" />
+                            <PinInput v-model="confirmPwd" />
                         </div>
                         <div class="err-text" v-if="pwdErrMsg">{{ pwdErrMsg }}</div>
                         <div class="popup-submit" @click="submitSetFundPwd"
@@ -353,6 +353,7 @@ import { Icon } from '@iconify/vue'
 import { useRoute, useRouter } from 'vue-router'
 import request from '@/utils/request'
 import { ElMessage } from 'element-plus'
+import PinInput from '@/components/PinInput.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -631,8 +632,15 @@ const checkHasPayPwd = async () => {
         const userInfo = JSON.parse(localStorage.getItem('user') || '{}')
         const user_id = userInfo.id
         if (!user_id) return false
+        // localStorage 兜底：設置成功後記住狀態，避免後端未更新時每次都返回 false
+        const key = `pay_pwd_set_${user_id}`
+        if (localStorage.getItem(key) === '1') return true
         const { data } = await request.post('/api/user/check-pay-pwd', { user_id })
-        return data?.has_pay_pwd || false
+        if (data?.has_pay_pwd) {
+            localStorage.setItem(key, '1')
+            return true
+        }
+        return false
     } catch (err) { return false }
 }
 
@@ -704,8 +712,8 @@ const submitSelect = async () => {
 
 // 提交支付'
 const submitPay = async () => {
-    if (!payPwd.value) {
-        showtext.value = '請輸入密碼';
+    if (!/^\d{6}$/.test(payPwd.value)) {
+        showtext.value = '請輸入6位數字支付密碼';
         showToast.value = true;
         yesno.value = true;
         yesnoa.value = false;
@@ -771,15 +779,8 @@ const submitPay = async () => {
 
 // 設定密碼'
 const submitSetFundPwd = async () => {
-    if (!newPwd.value || !confirmPwd.value) {
-        showtext.value = '請填寫完整密碼';
-        showToast.value = true;
-        yesno.value = true;
-        setTimeout(() => showToast.value = false, 1000);
-        return
-    }
-    if (newPwd.value.length < 6) {
-        showtext.value = '密碼至少6位';
+    if (!/^\d{6}$/.test(newPwd.value) || !/^\d{6}$/.test(confirmPwd.value)) {
+        showtext.value = '支付密碼必須為6位數字';
         showToast.value = true;
         yesno.value = true;
         setTimeout(() => showToast.value = false, 1000);
@@ -804,7 +805,17 @@ const submitSetFundPwd = async () => {
             showToast.value = true;
             yesnoa.value = true;
             setTimeout(() => showToast.value = false, 1000);
+            // 記住已設置狀態
+            const u = JSON.parse(localStorage.getItem('user') || '{}')
+            if (u.id) localStorage.setItem(`pay_pwd_set_${u.id}`, '1')
             closeSetPwdPopup()
+            // 直接彈出支付框，不再重新檢查
+            setTimeout(() => { showPayPopup.value = true }, 300)
+        } else {
+            showtext.value = data.msg || '設定失敗';
+            showToast.value = true;
+            yesno.value = true;
+            setTimeout(() => showToast.value = false, 1500);
         }
     } catch (e) {
         showtext.value = '設定失敗';
@@ -1557,7 +1568,7 @@ onMounted(() => {
 
 .pwd-label {
     font-size: 14px;
-    margin-bottom: 6px;
+    margin-bottom: 10px;
     text-align: left;
 }
 
@@ -1576,7 +1587,7 @@ onMounted(() => {
 }
 
 .input-row {
-    margin-bottom: 12px;
+    margin-bottom: 18px;
 }
 
 .err-text {

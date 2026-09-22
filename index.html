@@ -1,29 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 
-  <!-- 🔥 桌面全屏核心（完整无误版） -->
+  <!-- 添加到桌面後全屏運行（無瀏覽器地址欄/工具欄，與 App 一致） -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SKS">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="format-detection" content="telephone=no">
 
-  <!-- 桌面名称 -->
-  <meta name="apple-mobile-web-app-title" content="新名称">
-  <link rel="icon" href="/logo.png" />
-  <link rel="apple-touch-icon" href="/logo.png">
+  <!-- PWA 清單 -->
+  <link rel="manifest" href="/manifest.webmanifest">
 
-  <!-- 🔥 强制全屏样式（解决 100vh 兼容问题） -->
+  <!-- 桌面圖標 -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+
+  <!-- 全屏佈局：100dvh 為准，兼容舊機型 -webkit-fill-available -->
   <style>
     html, body {
       margin: 0;
       padding: 0;
       width: 100%;
       height: 100%;
-      height: -webkit-fill-available !important; /* 必须加 !important */
+      height: 100dvh;
+      height: -webkit-fill-available;
       overflow: hidden;
-      background-color: #222;
+      background-color: #ffffff;
       overscroll-behavior: none;
     }
     #app {
@@ -32,7 +39,7 @@
     }
   </style>
 
-  <title></title>
+  <title>SKS</title>
 </head>
 <body>
   <div id="app"></div>

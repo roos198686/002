@@ -89,6 +89,22 @@
   transform-origin: left center;
 }
 
+/* ===== H5 軟鍵盤彈起時的彈窗適配（配合 utils/keyboard.ts） ===== */
+/* 底部抽屜彈窗：貼到鍵盤上沿，高度限制在可視區，頁面本身不上頂 */
+html.kb-open .buy-popup.show {
+  bottom: var(--kb-h, 0px) !important;
+  height: auto !important;
+  max-height: calc(var(--vv-h, 100vh) - 12px) !important;
+}
+/* 居中對話框（設置資金密碼等）：在鍵盤上方的可視區內重新居中 */
+html.kb-open .copy-toastqwpjg {
+  top: calc(var(--vv-h, 100vh) / 2) !important;
+}
+/* 彈窗內固定在底部的提交按鈕：抬到鍵盤上方 */
+html.kb-open .buy-popup.show .popup-submit {
+  bottom: calc(10px + var(--kb-h, 0px) + env(safe-area-inset-bottom)) !important;
+}
+
 /* 顶部导航栏 */
 .register-all {
     width: 100%;

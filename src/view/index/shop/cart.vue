@@ -140,8 +140,8 @@
                         <span class="money-num">{{ totalPrice }}</span>
                     </div>
                     <div class="input-wrap">
-                        <label class="input-label">請輸入支付密碼</label>
-                        <input v-model="payPwd" type="password" placeholder="請輸入支付密碼" class="popup-input" />
+                        <label class="input-label">請輸入支付密碼（6位數字）</label>
+                        <PinInput v-model="payPwd" />
                     </div>
                     <div class="popup-submit" @click="submitPay">確認付款 ${{ totalPrice }}</div>
                 </div>
@@ -157,12 +157,12 @@
                 <div class="popup-body">
                     <div class="popup-title">設定支付密碼</div>
                     <div class="input-wrap">
-                        <label class="input-label">支付密碼</label>
-                        <input v-model="newPwd" type="password" placeholder="請輸入支付密碼" class="popup-input" />
+                        <label class="input-label">支付密碼（6位數字）</label>
+                        <PinInput v-model="newPwd" />
                     </div>
                     <div class="input-wrap">
                         <label class="input-label">確認密碼</label>
-                        <input v-model="confirmPwd" type="password" placeholder="請再次輸入密碼" class="popup-input" />
+                        <PinInput v-model="confirmPwd" />
                     </div>
                     <div class="err-text" v-if="pwdErrMsg">{{ pwdErrMsg }}</div>
                     <div class="popup-submit" @click="submitSetFundPwd"
@@ -182,6 +182,7 @@ import router from '../../../router';
 import { Icon } from '@iconify/vue';
 import request from '@/utils/request';
 import { useScrollCache } from '@/composables/useScrollCache'
+import PinInput from '@/components/PinInput.vue'
 
 defineOptions({ name: 'CartList' })
 useScrollCache()
@@ -288,8 +289,15 @@ const goCheck = async () => {
 const checkHasPayPwd = async () => {
     try {
         const user = getUser();
+        // localStorage 兜底
+        const key = `pay_pwd_set_${user.id}`
+        if (localStorage.getItem(key) === '1') return true
         const { data } = await request.post('/api/user/check-pay-pwd', { user_id: user.id });
-        return data?.has_pay_pwd || false;
+        if (data?.has_pay_pwd) {
+            localStorage.setItem(key, '1')
+            return true
+        }
+        return false;
     } catch (e) {
         return false;
     }
@@ -307,14 +315,8 @@ const closeSetPwdPopup = () => {
 };
 
 const submitSetFundPwd = async () => {
-    if (!newPwd.value || !confirmPwd.value) {
-        showtext.value = '請填寫完整密碼';
-        showToast.value = true;
-        yesno.value = false;
-        return;
-    }
-    if (newPwd.value.length < 6) {
-        showtext.value = '密碼至少6位';
+    if (!/^\d{6}$/.test(newPwd.value) || !/^\d{6}$/.test(confirmPwd.value)) {
+        showtext.value = '支付密碼必須為6位數字';
         showToast.value = true;
         yesno.value = false;
         return;
@@ -334,16 +336,22 @@ const submitSetFundPwd = async () => {
             pay_pwd: newPwd.value
         });
         if (data.code === 1) {
+            localStorage.setItem(`pay_pwd_set_${user.id}`, '1')
             closeSetPwdPopup();
             setTimeout(() => (showPayPopup.value = true), 500);
+        } else {
+            showtext.value = data.msg || '設定失敗';
+            showToast.value = true;
+            yesno.value = false;
+            setTimeout(() => showToast.value = false, 1500);
         }
     } catch (e) { } finally { loadingPay.value = false; }
 };
 
 const submitPay = async () => {
     if (showToastaqw.value) return;
-    if (!payPwd.value) {
-        showtext.value = '請輸入密碼';
+    if (!/^\d{6}$/.test(payPwd.value)) {
+        showtext.value = '請輸入6位數字支付密碼';
         yesno.value = false;
         showToast.value = true;
         setTimeout(() => showToast.value = false, 1000);
@@ -656,7 +664,13 @@ onMounted(async () => {
     text-align: center;
     padding: 20px;
 }
-
+.recommend-title {
+    color:#333;
+    font-size:14px;
+    font-weight:bold;
+    margin-bottom:10px;
+    text-align: center;
+}
 /* 推荐商品 */
 /* .recommend-wrap {
     padding:10px 5px;

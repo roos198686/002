@@ -14,17 +14,17 @@
                 <div class="content-wrapper">
                     <div class="cuekdil">
                         <div class="vielsljkfgds">
-                            <div style="margin-top: 30px;">
-                                <div class="texta">舊密碼</div>
-                                <input class="form-inputa" v-model="oldpassword" type="password" placeholder="請輸入舊密碼" />
+                            <div class="pin-row">
+                                <div class="texta">舊密碼（6位數字）</div>
+                                <PinInput v-model="oldpassword" />
                             </div>
-                            <div style="margin-top: 30px;">
-                                <div class="texta">新密碼</div>
-                                <input class="form-inputa" v-model="newpassword" type="password" placeholder="請輸入新密碼" />
+                            <div class="pin-row">
+                                <div class="texta">新密碼（6位數字）</div>
+                                <PinInput v-model="newpassword" />
                             </div>
-                            <div style="margin-top: 30px;">
+                            <div class="pin-row">
                                 <div class="texta">確認新密碼</div>
-                                <input class="form-inputa" v-model="confirmpassword" type="password" placeholder="請再次輸入新密碼" />
+                                <PinInput v-model="confirmpassword" />
                             </div>
                             <div class="textbutt" @click="submit">確認</div>
                             <div style="color:#666;font-size: 12px;margin: 30px;">
@@ -52,6 +52,7 @@ import { useRoute } from 'vue-router';
 import router from '../../../router';
 import { Icon } from '@iconify/vue';
 import request from '@/utils/request';
+import PinInput from '@/components/PinInput.vue';
 
 const route = useRoute();
 const goBack = () => router.go(-1);
@@ -65,17 +66,17 @@ const newpassword = ref('');
 const confirmpassword = ref('');
 
 const submit = async () => {
-  if (!oldpassword.value.trim()) {
+  if (!/^\d{6}$/.test(oldpassword.value)) {
     showToast.value = true;
     yesno.value = false;
-    showtext.value = '請輸入舊密碼';
+    showtext.value = '請輸入6位數字舊密碼';
     setTimeout(() => showToast.value = false, 2000);
     return;
   }
-  if (!newpassword.value.trim()) {
+  if (!/^\d{6}$/.test(newpassword.value)) {
     showToast.value = true;
     yesno.value = false;
-    showtext.value = '請輸入新密碼';
+    showtext.value = '請輸入6位數字新密碼';
     setTimeout(() => showToast.value = false, 2000);
     return;
   }
@@ -86,7 +87,7 @@ const submit = async () => {
     setTimeout(() => showToast.value = false, 2000);
     return;
   }
-  if (!confirmpassword.value.trim()) {
+  if (!/^\d{6}$/.test(confirmpassword.value)) {
     showToast.value = true;
     yesno.value = false;
     showtext.value = '請確認新密碼';
@@ -227,6 +228,14 @@ onMounted(() => {
 .vielsljkfgds {
     height: 100%;
     padding: 20px;
+}
+
+.pin-row {
+    margin-top: 30px;
+}
+
+.pin-row .texta {
+    margin-bottom: 12px;
 }
 
 .form-inputa {

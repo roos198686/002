@@ -70,7 +70,7 @@
 
             <!-- 為你推薦 -->
             <div style="padding:10px;margin-top:10px;">
-                <div style="color:#333; font-size:14px; font-weight:bold; margin-bottom:10px;">
+                <div style="color:#333; font-size:14px; font-weight:bold; margin-bottom:10px;text-align: center;">
                     為你推薦
                 </div>
                 <div class="waterfall-box">
@@ -230,7 +230,7 @@ onMounted(() => {
 .title {
     font-size: 15px;
     font-weight: bold;
-    color: #8a6520;
+    color: #000;
     text-align: center;
     width: 100%;
     margin-right: 40px;
@@ -238,7 +238,7 @@ onMounted(() => {
 
 .logistics-card {
     background: #f5f5f5;
-    margin: 50px 10px 10px 10px;
+    margin: 10px;
     border-radius: 6px;
 }
 
@@ -276,7 +276,7 @@ onMounted(() => {
     margin-bottom: 8px;
     display: flex;
     align-items: flex-start;
-    line-height: 1;
+    line-height: 1.2;
     padding: 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -285,7 +285,7 @@ onMounted(() => {
     overflow: hidden;
     text-overflow: ellipsis;
     word-break: break-all;
-    color: #5fff5f;
+    color: #595a59;
 }
 
 .spec {
@@ -302,8 +302,8 @@ onMounted(() => {
 }
 
 .timeline {
-    padding: 15px 25px;
-    border-bottom: 3px solid #1b1b1b;
+    padding: 15px 20px;
+    border-bottom: 3px solid #cccbcb;
 }
 
 .t-item {
@@ -361,7 +361,7 @@ onMounted(() => {
 .address {
     text-align: left;
     padding: 15px;
-    border-bottom: 3px solid #1b1b1b;
+    border-bottom: 3px solid #cccbcb;
 }
 
 .address-text {

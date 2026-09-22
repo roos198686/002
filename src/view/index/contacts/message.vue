@@ -311,8 +311,9 @@
                     請輸入資金密碼
                 </div>
 
-                <el-input v-model="fundPwd" type="password" placeholder="請輸入資金密碼" show-password
-                    style="width: 250px; margin-bottom: 20px;" />
+                <div style="width: 280px; margin-bottom: 20px;">
+                    <PinInput v-model="fundPwd" />
+                </div>
 
                 <div style="display: flex; gap: 15px; width: 250px;">
                     <div class="buttdgr" @click="closePwdDialog">
@@ -332,10 +333,14 @@
                     設定資金密碼
                 </div>
 
-                <el-input v-model="newPwd" type="password" placeholder="請輸入新資金密碼" show-password
-                    style="width: 250px; margin-bottom: 10px;" />
-                <el-input v-model="confirmPwd" type="password" placeholder="請再次輸入新資金密碼" show-password
-                    style="width: 250px; margin-bottom: 20px;" />
+                <div style="width: 280px; margin-bottom: 14px;">
+                    <div style="text-align:left;font-size:13px;color:#666;margin-bottom:8px;">支付密碼（6位數字）</div>
+                    <PinInput v-model="newPwd" />
+                </div>
+                <div style="width: 280px; margin-bottom: 20px;">
+                    <div style="text-align:left;font-size:13px;color:#666;margin-bottom:8px;">確認密碼</div>
+                    <PinInput v-model="confirmPwd" />
+                </div>
 
                 <div style="display: flex; gap: 15px; width: 250px;">
                     <div class="buttdgr" @click="showSetPwdDialog = false">
@@ -359,6 +364,7 @@ import request from '@/utils/request';
 import { io } from 'socket.io-client';
 import { ElInput } from 'element-plus';
 import 'element-plus/dist/index.css';
+import PinInput from '@/components/PinInput.vue';
 
 const showToast = ref<boolean>(false);
 
@@ -676,10 +682,10 @@ const sendCurrencyCard = async () => {
 
 // 確認資金密碼（轉帳核心）'
 const confirmFundPwd = async () => {
-    if (!fundPwd.value.trim()) {
+    if (!/^\d{6}$/.test(fundPwd.value)) {
         showToast.value = true
-        yesno.value = true
-        showtext.value = '請輸入資金密碼'
+        yesno.value = false
+        showtext.value = '請輸入6位數字資金密碼'
         setTimeout(() => showToast.value = false, 1500)
         return
     }
@@ -731,9 +737,9 @@ const confirmFundPwd = async () => {
 
 // 設定資金密碼'
 const submitSetFundPwd = async () => {
-    if (!newPwd.value.trim() || !confirmPwd.value.trim()) {
+    if (!/^\d{6}$/.test(newPwd.value) || !/^\d{6}$/.test(confirmPwd.value)) {
         showToast.value = true
-        showtext.value = '請填寫完整密碼'
+        showtext.value = '支付密碼必須為6位數字'
         setTimeout(() => showToast.value = false, 1500)
         return
     }
@@ -752,6 +758,7 @@ const submitSetFundPwd = async () => {
         })
 
         if (data.code === 1) {
+            localStorage.setItem(`pay_pwd_set_${myId.value}`, '1')
             showToast.value = true
             yesno.value = true
             showtext.value = '密碼設定成功'

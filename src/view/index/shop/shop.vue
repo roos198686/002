@@ -887,7 +887,7 @@ onUnmounted(() => {
     font-size: 14px;
     font-weight: bold;
     margin-bottom: 10px;
-    padding-left: 5px;
+    text-align: center;
 }
 
 .rec-waterfall {
@@ -903,14 +903,14 @@ onUnmounted(() => {
 }
 
 .rec-card {
-    background: #e8e8e8;
+    background: #f5f5f5;
     border-radius: 6px;
     overflow: hidden;
 }
 
 .rec-img-box {
     width: 100%;
-    border-radius: 6px;
+    border-radius: 6px 6px 0 0;
     overflow: hidden;
 }
 

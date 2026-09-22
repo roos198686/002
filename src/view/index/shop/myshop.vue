@@ -670,7 +670,7 @@ onUnmounted(() => {
 .shop-desc {
     flex: 1;
     margin-left: 12px;
-    color: #333;
+    color: #222222;
 }
 
 .shop-name {
@@ -681,7 +681,7 @@ onUnmounted(() => {
 
 .shop-tip {
     font-size: 12px;
-    color: #5c5c5c;
+    color: #3d3d3d;
     margin: 4px 0;
 }
 
@@ -723,7 +723,7 @@ onUnmounted(() => {
 .list-title {
     font-size: 14px;
     color: #111;
-    padding-left: 5px;
+    text-align: center;
     border-radius: 20px 20px 0 0;
     padding: 10px 20px;
     z-index: 99999;

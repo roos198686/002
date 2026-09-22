@@ -20,7 +20,8 @@
                                     :placeholder="!userInfo.balance ? '可提領上限：0' : '可提領上限：' + userInfo.balance" />
                             </div>
                             <div style="width:100%;margin-bottom:15px;">
-                                <input class="form-input" v-model="searchPassword" type="password" placeholder="資金密碼" />
+                                <div style="text-align:left;font-size:13px;color:#666;margin-bottom:8px;">資金密碼（6位數字）</div>
+                                <PinInput v-model="searchPassword" />
                             </div>
                             <div class="form-input-text" v-if="showList.length === 0" @click="cardlist">
                                 尚無提領地址，請前往新增
@@ -71,10 +72,14 @@
                     設定資金密碼
                 </div>
 
-                <el-input v-model="newPwd" type="password" placeholder="請輸入新密碼" show-password
-                    style="width: 250px; margin-bottom: 10px;" />
-                <el-input v-model="confirmPwd" type="password" placeholder="請再次確認密碼" show-password
-                    style="width: 250px; margin-bottom: 20px;" />
+                <div style="width: 280px; margin-bottom: 14px;">
+                    <div style="text-align:left;font-size:13px;color:#666;margin-bottom:8px;">支付密碼（6位數字）</div>
+                    <PinInput v-model="newPwd" />
+                </div>
+                <div style="width: 280px; margin-bottom: 20px;">
+                    <div style="text-align:left;font-size:13px;color:#666;margin-bottom:8px;">確認密碼</div>
+                    <PinInput v-model="confirmPwd" />
+                </div>
 
                 <div style="display: flex; gap: 15px; width: 250px;">
                     <div class="buttdgr" @click="showSetPwdDialog = false">
@@ -94,7 +99,7 @@ import { onMounted, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Icon } from '@iconify/vue';
 import request from '@/utils/request';
-import { ElInput } from 'element-plus';
+import PinInput from '@/components/PinInput.vue';
 
 const showSetPwdDialog = ref(false)
 const newPwd = ref('')
@@ -160,8 +165,8 @@ const submit = async () => {
         return;
     }
 
-    if (!searchPassword.value) {
-        showtext.value = '請輸入資金密碼';
+    if (!/^\d{6}$/.test(searchPassword.value)) {
+        showtext.value = '請輸入6位數字資金密碼';
         yesno.value = false;
         showToast.value = true;
         setTimeout(() => showToast.value = false, 2000);
@@ -228,8 +233,8 @@ const submit = async () => {
 };
 
 const submitSetFundPwd = async () => {
-    if (!newPwd.value.trim() || !confirmPwd.value.trim()) {
-        showtext.value = '請完整填寫密碼欄位'
+    if (!/^\d{6}$/.test(newPwd.value) || !/^\d{6}$/.test(confirmPwd.value)) {
+        showtext.value = '支付密碼必須為6位數字'
         yesno.value = false
         showToast.value = true
         setTimeout(() => showToast.value = false, 1500)
@@ -252,6 +257,7 @@ const submitSetFundPwd = async () => {
         })
 
         if (data.code === 1) {
+            localStorage.setItem(`pay_pwd_set_${user.id}`, '1')
             showtext.value = '密碼設定成功'
             yesno.value = true
             showToast.value = true
