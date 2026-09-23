@@ -3,18 +3,22 @@
         <div class="register-container">
             <div class="register-all">
                 <!-- 统一顶部：只保留返回按钮 -->
-                <div class="allar-top allar-top-transparent">
+                <!-- <div class="allar-top allar-top-transparent">
                     <div class="allar-top-a" @click="goBack">
                         <Icon icon="tabler:chevron-left" height="30" />
                     </div>
-                </div>
+                </div> -->
 
                 <!-- 统一滚动容器 -->
                 <div class="content-wrapper" ref="scrollWrap" @scroll="saveScrollPos">
                     <div class="cuekdil">
                         <div class="userteat-all">
                             <div class="userteat">
-                                <div class="topimage" :style="nameareva"></div>
+                                <div class="topimage" :style="nameareva">
+                                    <div class="allar-top-a" @click="goBack">
+                                        <Icon icon="tabler:chevron-left" height="30" />
+                                    </div>
+                                </div>
                                 <div class="topimage-jrk">
                                     <div class="userteata">
                                         <img :src="baseURL + user.avatar" class="avatar-img" />
@@ -154,8 +158,8 @@
                 </div>
             </div>
         </div>
-
         <!-- 評論彈窗 -->
+        <div v-if="showCommentModal" @touchmove.prevent class="comment-modal-all"></div>
         <div v-if="showCommentModal" class="comment-modal-wrap" @touchmove.prevent>
             <div class="comment-modal-box">
                 <!-- 頂部資料-->
@@ -291,7 +295,7 @@ const nameareva = computed(() => {
     return {
         height: '230px',
         display: 'flex',
-        alignItems: 'center',
+        // alignItems: 'center',
         backgroundImage: `url(${bgFullUrl})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center'
@@ -339,20 +343,6 @@ const currentUser = reactive({
     id: userData.id || '',
     role_level: userData.role_level || '0'
 });
-// const heartremix = async () => {
-//     try {
-//         const { data: res } = await request.post('/api/artist/like', {
-//             user_id: userId.value,
-//             liked_by: currentUser.id
-//         });
-//         if (res.code === 1) {
-//             isLiked.value = res.action === 'like';
-//             user.like_count = isLiked.value ? user.like_count + 1 : user.like_count - 1;
-//         }
-//     } catch (err) {
-//         console.log(err);
-//     }
-// };
 
 // 滚动位置保存/恢复'
 const scrollWrap = ref<HTMLElement | null>(null);
@@ -896,17 +886,13 @@ onMounted(() => {
     -webkit-overflow-scrolling: touch;
 }
 
-/* 透明頂欄：讓背景圖延伸到劉海區域 */
-.allar-top-transparent {
-    background: transparent !important;
-    border-bottom: none !important;
-}
-.allar-top-transparent .allar-top-a {
+.allar-top-a {
     color: #fff;
     background-color: #2222229c;
     border-radius: 5px;
     height: 30px;
     margin-left: 15px;
+    margin-top: 15px;
 }
 
 .cuekdil {
@@ -1379,14 +1365,15 @@ onMounted(() => {
 /*评论弹窗*/
 .comment-modal-wrap {
     position: fixed;
-    top: 0;
+    bottom: 0;
     width: 100%;
-    height: 100%;
+    height: 90%;
     z-index: 999;
     display: flex;
     justify-content: center;
     overflow: hidden;
     touch-action: none;
+    border-radius: 15px 15px 0 0;
 }
 
 .comment-modal-box {
@@ -1551,5 +1538,14 @@ onMounted(() => {
     background: rgba(0, 0, 0, 0.4);
 }
 
+.comment-modal-all {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 998;
 
+}
 </style>

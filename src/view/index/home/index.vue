@@ -138,6 +138,7 @@
         </div>
 
         <!-- 評論彈窗 【新增成功-->
+        <div v-if="showCommentModal" @touchmove.prevent class="comment-modal-all"></div>
         <div v-if="showCommentModal" @touchmove.prevent class="comment-modal">
             <div class="comment-modal-inner">
                 <!-- 頂部資料-->
@@ -1369,16 +1370,25 @@ onUnmounted(() => {
 /* 评论弹窗 */
 .comment-modal {
     position: fixed;
-    top: 0;
+    bottom: 0;
     width: 100%;
-    height: 100%;
+    height: 90%;
     z-index: 999;
     display: flex;
     justify-content: center;
     overflow: hidden;
     touch-action: none;
+    border-radius: 10px 10px 0 0;
 }
-
+.comment-modal-all {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 998;
+}
 .comment-modal-inner {
     width: 100%;
     max-width: 500px;

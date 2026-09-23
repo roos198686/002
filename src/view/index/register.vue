@@ -319,6 +319,7 @@ body {
     font-size: 50px;
     font-weight: bolder;
     margin-top: 30px;
+    text-align: center;
 }
 
 .register-all {
