@@ -1,8 +1,11 @@
 name: Build Unsigned iOS IPA
 
-# 手動觸發：GitHub 倉庫頁 -> Actions -> 左側選 "Build Unsigned iOS IPA" -> Run workflow
+# 推送 main 自動構建；也可手動觸發：GitHub 倉庫頁 -> Actions -> 左側選 "Build Unsigned iOS IPA" -> Run workflow
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
