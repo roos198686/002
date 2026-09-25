@@ -20,7 +20,7 @@
                                     :placeholder="!userInfo.balance ? '可提領上限：0' : '可提領上限：' + userInfo.balance" />
                             </div>
                             <div style="width:100%;margin-bottom:15px;">
-                                <div style="text-align:left;font-size:13px;color:#666;margin-bottom:8px;">資金密碼（6位數字）</div>
+                                <div style="text-align:left;font-size:13px;color:#666;margin:8px 25px;">資金密碼（6位數字）</div>
                                 <PinInput v-model="searchPassword" />
                             </div>
                             <div class="form-input-text" v-if="showList.length === 0" @click="cardlist">

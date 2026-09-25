@@ -167,7 +167,7 @@ onMounted(() => {
     refreshUnreadBadge()
 
     // 掛載 Socket 全域監聽（核心：實時接收新訊息）'
-    socket = io(baseURL, { transports: ['websocket'] })
+    socket = io(baseURL || undefined, { transports: ['websocket'] })
     socket.on('connect', () => {
         socket.emit('bindUserId', user.id)
     })

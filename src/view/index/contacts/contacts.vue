@@ -380,7 +380,7 @@ const initContactsData = () => {
     const scroller = document.querySelector('.content-wrapper')
     if (scroller) scroller.addEventListener('scroll', handleScroll)
 
-    socket = io(request.defaults.baseURL!, { transports: ['websocket'] });
+    socket = io(request.defaults.baseURL || undefined, { transports: ['websocket'] });
     socket.on('connect', () => socket.emit('bindUserId', user.id));
     socket.on('new_msg', () => {
         // 后端实时推送，刷新

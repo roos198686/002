@@ -955,7 +955,7 @@ onMounted(() => {
     } catch (e) { }
 
     if (!myId.value) return;
-    socket = io(request.defaults.baseURL, { transports: ['websocket'] });
+    socket = io(request.defaults.baseURL || undefined, { transports: ['websocket'] });
 
     socket.on('connect', () => {
         socket.emit('bindUserId', myId.value);

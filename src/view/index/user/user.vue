@@ -239,7 +239,6 @@ import { Icon } from '@iconify/vue';
 import router from '../../../router';
 import { useRoute } from 'vue-router';
 import request from '@/utils/request';
-import { BASE_URLQDAPI } from "@/config/base"
 import { io } from 'socket.io-client';
 let socket: any = null;
 const route = useRoute();
@@ -467,7 +466,7 @@ onMounted(() => {
     loadUserIncome();
 
     if (user.id) {
-        socket = io(baseURL, { transports: ['websocket'] });
+        socket = io(baseURL || undefined, { transports: ['websocket'] });
         socket.emit('bindUserId', user.id);
         socket.on('new_msg', () => {
         });
